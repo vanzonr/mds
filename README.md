@@ -32,8 +32,12 @@ This converts the markdown file into pdf.  MARKDOWNFILE can use
 extended pandoc markdown syntax (see below).
 
 OPTIONS:
+
   -d  work in draft mode; figures are included as outlines
   -v  verbose mode
+  -vv more verbose mode
+  -vvv most verbose mode
+  -q  call quarto to execute blocks; experimental and requires additionally quarto, r and knitr.
   
 Extended Markdown Syntax
 =========================
