@@ -1,0 +1,386 @@
+#!/bin/bash
+set -e
+
+if [ "${MDSDRAFT:-}" = 1 ]; then
+    DRAFT=true;
+else
+    DRAFT=false
+fi
+if [ "${MDSVERBOSE:-}" = 1 ]; then
+    VERBOSE=1
+else
+    VERBOSE=0
+fi
+if [ "${MDSQUARTO:-}" = 1 ]; then
+    QUARTO=true
+else
+    QUARTO=false
+fi
+
+shopt -s expand_aliases
+alias +++=:
+
+help() {
+    cat <<EOF
+mds converts a markdown file into pdf using pandoc and latex.
+
+Usage:
+
+  mds [OPTIONS] MARKDOWNFILE
+
+OPTIONS:
+  -h    show this help
+  -q    pass through quarto for executable blocks
+  -d    work in draft mode; figures are included as outlines
+  -v    verbose mode
+  -vv   more verbosity
+  -vvv  more verbosity and show latex output
+  
+MARKDOWNFILE can use extended pandoc markdown syntax.
+
+EOF
+}
+
++++ Parsing command line. +++
+
+while getopts "vdqh" option; do
+    case $option in
+        "v") let VERBOSE=VERBOSE+1; alias +++='echo +++';;
+        "d") DRAFT=true;;
+        "q") QUARTO=true;;
+        "h") help; exit 0;;
+    esac
+done
+while [ "${1:0:1}" = "-" ]; do shift; done
+
++++ Checking for command line errors. +++
+if [ ! -f "$1" ]; then
+    echo "ERROR ($0): File '$1' not found." 1>&2
+    help
+    exit 1
+else
+    +++ Found file $1. +++
+fi
+if (( $# > 1 )); then 
+    echo "ERROR ($0): Extraneous command arguments given." 1>&2
+    help
+    exit 1
+fi
+
+which pandoc >& /dev/null || module load pandoc || return 1
+which xelatex >& /dev/null || module load texlive || return 1
+
++++ Starting with default theme settings. +++
+
+HIGHLIGHT=zenburn
+ASPECTRATIO=169
+LOGO=""
+LOGOHEIGHT=0.1
+LOGOWIDTH=""
+LOGOUP=""
+LOGOONTITLE=true
+FONTFAMILY=""
+FONTSIZE=9pt
+THEME=Boadilla
+INNERTHEME=rounded
+FONTTHEME=structurebold
+COLORTHEME=orchid
+THEMETEX=style.tex
+HANDOUT=false
+ENGINE=pdflatex
+NAME=${1%.*}
+tempfile=$(mktemp --suffix .md)
+
++++ Override theme settings if NAME.theme exists. +++
+
+if [ -f "$NAME.theme" ]; then
+    +++ Found file $NAME.theme and reading settings. +++
+    source "$NAME.theme"
+elif [ -f "style.theme" ]; then
+    +++ Found file $NAME.theme and reading settings. +++
+    source "style.theme"
+fi
+
+if [ "$FONTFAMILY" ]; then
+    if [ $ENGINE != xelatex ]; then
+        +++ Changing engine to xelatex to support font selection. +++
+    fi
+    ENGINE=xelatex
+fi
+
+if (( VERBOSE > 1 )); then
+    +++ The following settings will be used: +++
+    for setting in HIGHLIGHT ASPECTRATIO LOGO LOGOUP LOGOWIDTH LOGOHEIGHT LOGOONTITLE FONTFAMILY FONTSIZE THEME INNERTHEME FONTTHEME COLORTHEME THEMETEX HANDOUT ENGINE NAME DRAFT VERBOSE QUARTO
+    do
+        printf "+++ $setting\t${!setting}\n"
+    done
+fi
+
+if [ $ENGINE = xelatex ]; then
+    ENGINEDRAFTMODEOPTION=--no-pdf
+else
+    ENGINEDRAFTMODEOPTION=-draftmode
+fi
+
++++ "Replacing '[[..||..]]' with modern markdown column formats." +++
+
+function replacecolumns()
+{
+    local tempfile=$(mktemp)
+    local colcount=0
+    local blockstart=":::::::{.block}"
+    local blockend=":::::::"
+    local line=""
+    while IFS= read -r line; do
+        if [ $colcount = 0 ]; then
+            if [ "$line" = "[[" ]; then
+                colcount=1
+                \rm -f "$tempfile"
+                touch "$tempfile"
+            else
+                echo "$line"
+            fi
+        else
+            if [ "$line" = "||" ];  then
+                let colcount+=1
+            elif [ "$line" = "|||" ];  then
+                let colcount+=2
+            elif [ "$line" = "||||" ];  then
+                let colcount+=3
+            fi
+            if [ "$line" != "]]" ];  then
+                echo "$line">>"$tempfile"
+            else
+                local colstart=":::{.column width=0.$(((97-colcount)/colcount))}"
+                local colstart2=":::{.column width=0.$((2*(97-colcount)/colcount))}"
+                local colstart3=":::{.column width=0.$((3*(97-colcount)/colcount))}"
+                echo "::::::columns"
+                echo "$colstart"
+                echo "$blockstart"
+                cat "$tempfile" | while IFS= read -r line ; do
+                    case "$line" in
+                        "||")
+                            echo "$blockend"
+                            echo ":::"
+                            echo "$colstart"
+                            echo "$blockstart"
+                            ;;
+                        "|||")
+                            echo "$blockend"
+                            echo ":::"
+                            echo "$colstart2"
+                            echo "$blockstart"                                                        
+                            ;;
+                        "||||")
+                            echo "$blockend"
+                            echo ":::"
+                            echo "$colstart3"
+                            echo "$blockstart"
+                            ;;
+                        *)
+                            echo "$line"
+                            ;;
+                    esac
+                done
+                echo "$blockend"
+                echo ":::"
+                echo "::::::"
+                colcount=0
+            fi
+        fi
+    done
+}
+cat "$1" | replacecolumns > "$tempfile"
+
++++ "Extensions for centering, highlighting, skipping lines and " +++
++++ "easy two-column layout, using placeholders BEGINCENTERLINE " +++
++++ "ENDCENTERLINE, BEGINALERT, ENDALERT, SKIPPINGLINE          " +++
+
+sed -i \
+    -e 's/->\(.*\)<-/BEGINCENTERLINE\1ENDCENTERLINE/' \
+    -e 's/\*\*\*\*\([^\*]*\)\*\*\*\*/BEGINALERT\1ENDALERT/g' \
+    -e 's/^[[:space:]]*\.[[:space:]]*$/SKIPPINGLINE/' \
+    "$tempfile"
+
++++ $tempfile written. +++
+
++++ "Enable extra-wide lists by adding four trailing spaces." +++
++++ "Note: four trailing spaces anywhere else are already a " +++
++++ "markdown hard line break.                              " +++
+
+perl -0777 -i -pe 's/(\ *)([\*\-\+])(\ *)([^\n]*)([^ ])     *\n\ *\n/\1\2\3\4\5    \n\1 \3&nbsp;\n/g'  "$tempfile"
+
++++ $tempfile updated. +++
+
++++ Extension to include files in source block +++
+# sed command looks for at least triple backtips, a curly bace then
+# anything upto the " include=", then eats the word following include,
+# up to a curly closing brace further sed commands look for options
+# startLine= and endLine= clauses.  These must follow the include= and
+# startLine= must preceed endLine=.
+sed -i.bak -e "s/\(\`\`\`\`*{\)\(.*\)\( include=\)\([^} ]*\)\(}.*\)/echo \'\1\2\5';cat \4/e"  "$tempfile"
+sed -i -e "s/\(\`\`\`\`*{\)\(.*\)\( include=\)\([^} ]*\)\( startLine=\)\([^} ]*\)\(}.*\)/echo \'\1\2\7';sed -n \6,100000p \4/e"  "$tempfile"
+sed -i -e "s/\(\`\`\`\`*{\)\(.*\)\( include=\)\([^} ]*\)\( endLine=\)\([^} ]*\)\(}.*\)/echo \'\1\2\7';sed -n 1,\6p \4/e"  "$tempfile"
+sed -i -e "s/\(\`\`\`\`*{\)\(.*\)\( include=\)\([^} ]*\)\( startLine=\)\([^} ]*\)\( endLine=\)\([^} ]*\)\(}.*\)/echo \'\1\2\9';sed -n \6,\8p \4/e"  "$tempfile"
+
++++ Make pause sequence more robust by adding empty lines +++
+
+sed -i -e "s/^\([[:space:]]*. . .\)$/\n\1\n/" "$tempfile"
+
++++ Add theme settings in yaml header. +++
+
+findheader=$(eval echo $(\grep -n -- '^---$' $tempfile))
+tempfile2=$(mktemp)
+if [[ $findheader =~ ^1:---\  ]]; then
+    headerlines=$(echo ${findheader:6} | awk -F: '{print $1}')
+    let insertionpoint=headerlines-1
+    head -n $insertionpoint $tempfile > $tempfile2
+else
+    echo "---" > $tempfile2 
+fi
+cat >> $tempfile2 <<EOF
+classoption: aspectratio=$ASPECTRATIO
+fontsize: $FONTSIZE
+theme: $THEME
+innertheme: $INNERTHEME
+fonttheme: $FONTTHEME
+colortheme: $COLORTHEME
+engine: knitr
+keep-md: true
+format: beamer
+echo: true
+warning: true
+execute:
+  cache: true
+header-includes: |
+ \newcommand{\setfigheight}[1]{\setkeys{Gin}{height=#1,keepaspectratio}}
+ \newcommand{\setfigwidth}[1]{\setkeys{Gin}{width=#1,keepaspectratio}}
+ \newcommand{\setrelfigwidth}[1]{\setfigwidth{#1\csname textwidth\endcsname}}
+ \newcommand{\setrelfigheight}[1]{\setfigheight{#1\csname textheight\endcsname}}
+ \usepackage{tikz}
+ \usetikzlibrary{arrows.meta}
+EOF
+if [ "$FONTFAMILY" ]; then
+    echo " \usepackage{fontspec}" >> $tempfile2
+    echo " \setsansfont{$FONTFAMILY}" >> $tempfile2
+fi
+if [ "$LOGOUP" ]; then
+    LOGOVSPACE="\vspace{$LOGOUP\textheight}"
+else
+    LOGOVSPACE=""
+fi
+if [ "$LOGO" ]; then
+    if [ "$LOGOHEIGHT" ]; then
+        if [ "$LOGOWIDTH" ]; then
+            echo " \logo{$LOGOVSPACE\includegraphics[width=${LOGOWIDTH}\textwidth,height=${LOGOHEIGHT}\textheight]{$LOGO}}" >> $tempfile2
+        else
+            echo " \logo{$LOGOVSPACE\includegraphics[height=${LOGOHEIGHT}\textheight]{$LOGO}}" >> $tempfile2
+        fi
+    else
+        if [ "$LOGOWIDTH" ]; then
+            echo " \logo{$LOGOVSPACE\includegraphics[width=${LOGOWIDTH}\textwidth]{$LOGO}}" >> $tempfile2
+        else
+            echo " \logo{$LOGOVSPACE\includegraphics{$LOGO}}" >> $tempfile2
+        fi
+    fi
+fi
+if [ -f "$THEMETEX" ]; then
+    echo " \input{$THEMETEX}" >> $tempfile2
+fi
+if [[ $findheader =~ ^1:---\  ]]; then
+    \tail -n+$headerlines $tempfile >> $tempfile2
+else
+    echo "---" >> $tempfile2
+    cat $tempfile >> $tempfile2
+fi
+\cp -f $tempfile2 $tempfile
+
++++ $tempfile updated. +++
+
+if $QUARTO; then
+    +++ quarto calls for execution +++
+    tempqmdfile="${1//.qmd/-tmp}.qmd"  # "$(mktemp -p. tmp.XXXXXXXX.qmd)"
+    \cp $tempfile $tempqmdfile
+    /usr/bin/time quarto render $tempqmdfile --to beamer --quiet
+    \cp ${tempqmdfile/.qmd/.beamer.md} ${tempfile}
+    \rm -f ${tempqmdfile} ${tempqmdfile/.qmd/.beamer.md} ${tempqmdfile/.qmd/.pdf}
+    +++ quarto done +++
+fi
+
++++ The remaining conversion to latex+beamer is handled by pandoc. +++
+
+if grep -q '^## ' "$tempfile"; then
+    SLIDELEVEL="--slide-level 2"
+fi
+
+pandoc -t beamer -s ${SLIDELEVEL:-} --highlight-style=$HIGHLIGHT --wrap=none "$tempfile" -o ${NAME}.tex
+
+if ! $LOGOONTITLE; then
+    +++ Removing logo from the title slide +++
+    sed -i -e 's/\\frame{\\titlepage}/\\frame[plain]{\\titlepage}/' ${NAME}.tex
+fi
+
++++ ${NAME}.tex created. +++
+
+if $HANDOUT; then
+    +++ Making handout version. +++
+    sed -i -e 's/]{beamer}/,handout]{beamer}/' ${NAME}.tex
+    +++ ${NAME}.tex updated. +++
+fi
+
++++ Fix: let paragraphs in boxes and columns be separated +++
+
+sed -i \
+    -e 's/\\begin{block}{\(.*\)}/\\begin{block}{\1}\\setlength{\\parskip}{0.5\\baselineskip}/' \
+    -e 's/\\begin{column}{\(.*\)}/\\begin{column}{\1}\\setlength{\\parskip}{0.5\\baselineskip}/' \
+    ${NAME}.tex
+
++++ "Replace placeholders for centering, highlighting, line-skipping" +++
++++ "and add support for overlays extension.                        " +++
+
+sed -i \
+    -e 's/SKIPPINGLINE/\\vspace{\\baselineskip}/g' \
+    -e 's/BEGINCENTERLINE/\\centerline{/g' \
+    -e 's/ENDCENTERLINE/}/g' \
+    -e 's/BEGINALERT/\\alert{/g' \
+    -e 's/ENDALERT/}/g' \
+    -e 's/@ @ @ @/}/g' \
+    -e 's/@ @ @ \([0-9][^ ]*\)/\\only<\1>{/g' \
+    ${NAME}.tex
+
++++ ${NAME}.tex updated. +++
+
++++ Using $ENGINE to convert the latex file to a PDF. +++
+
+if (( VERBOSE < 3 )); then
+    REDIR='1>/dev/null'
+    QUARTOQUIET=--quiet
+else
+    REDIR=''
+    QUARTOQUIET=''
+fi
+
+if $DRAFT; then
+    +++ Update $NAME.tex for a DRAFT version +++
+    sed -i \
+        -e 's/documentclass\[/documentclass\[draft,/' \
+        ${NAME}.tex
+    eval ${ENGINE} -halt-on-error ${NAME}.tex $REDIR
+else
+    +++ First pass: draft version +++
+    sed -i \
+        -e 's/documentclass\[/documentclass\[draft,/' \
+        ${NAME}.tex
+    eval ${ENGINE} -halt-on-error ${ENGINEDRAFTMODEOPTION} ${NAME}.tex $REDIR
+    +++ Second pass: complete version +++
+    sed -i \
+        -e 's/documentclass\[draft,/documentclass\[/' \
+        ${NAME}.tex
+    eval ${ENGINE} -halt-on-error ${NAME}.tex $REDIR
+fi
+
++++ ${NAME}.pdf created. +++
+
++++ Get rid off intermediates but leave latex source in case you want to tweak it +++
+
+rm -f ${NAME}.nav ${NAME}.snm ${NAME}.vrb ${NAME}.lot ${NAME}.toc ${NAME}.aux ${NAME}.aux.bak ${NAME}.log ${NAME}.out ${NAME}.bbl ${NAME}.end ${NAME}.blg ${NAME}.stdout ${NAME}.xdv "$tempfile"
