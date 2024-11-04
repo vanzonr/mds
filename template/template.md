@@ -6,12 +6,12 @@ author:
 date: DATE
 ---
 
-# Introduction Section
+# Level 1 Heading = Section
 
-## A slide
+## Level 2 Heading = Slide
 
 
-The file `template.md` contains an example of how to use markdown to:
+This file, `template.md`, contains an example of how to use markdown to:
 . . .
   * create a slide
   * create a section
@@ -28,14 +28,46 @@ The theme settings are all in the file `template.theme`.
 
 # Another Section
 
-## This is a slide 
+## A Slide About Emphasis
 
-### Box Title
+**Bold text**
 
-[[
+*Italic text*
 
-Code in one column:
+~~Strikethough text~~
+
+->Centered text<-
+
+****Alert text****
+
+.
+
+> This here is a block
+> quote. The quick brown fox jumped over the lazy dog.
+> The quick brown fox jumped over the lazy dog.
+> The quick brown fox jumped over the lazy dog.
+> The quick brown fox jumped over the lazy dog.
+> The quick brown fox jumped over the lazy dog.
+
+
+## Another level 
+
+### Level 3 Heading = Box 
+
+Here's a numbered list:
+
+ 1. First item
+
+ 2. Next item
+
 . . .
+
+#### Level >= 4 Heading = Nested Box
+
+Rarely seen.
+
+## Code with Syntax Highlighting
+
  1. Python code:
  
     ```python
@@ -49,15 +81,76 @@ Code in one column:
     print(a)
     ```
 
+## Pictures
+
+[[
+
+One with a caption:
+
+![A caption](rectangular_prism.png){height=70%}
+
 ||
 
-. . .
-->A picture in the other column<-
+One without a caption:
 
-
-->![](rectangular_prism.png){width=50%}<-
+![](rectangular_prism.png){height=70%}
 
 ]]
+
+## Columns
+
+[[
+
+Left column
+
+Columns cannot be nested, but otherwise they can still contain other
+markdonw.
+. . .
+||
+
+Middle column
+
+This contains an image
+
+->![](rectangular_prism.png){height=50%}<-
+. . .
+||
+
+Right column
+
+This one contains some C code:
+
+```c
+int main()
+{
+    return 0;
+}
+```
+
+]]
+. . .
+Did you notice the pauses between the columns?
+
+
+## A Table
+
++-----------------+-----------------+-----------------+
+| Column header 1 | Column header 2 | Column header 3 |
++=================+=================+=================+
+|   A             |    B            |           C     |
++-----------------+-----------------+-----------------+
+|   D             |    E            |           F     |
++-----------------+-----------------+-----------------+
+
+
+## Link
+
+Where is the slide with the title ****[a table]****?
+
+Link to a site like ****<https://www.google.com>****.
+
+Link with a different text: ****[bla bla](https://www.google.com)****.
+
 
 # The End
 

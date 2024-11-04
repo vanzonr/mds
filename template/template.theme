@@ -2,14 +2,14 @@
 HIGHLIGHT=zenburn
 ASPECTRATIO=169
 FONTSIZE=12pt           # choose from: 8,9,10,11,12,14,17,20pt
-THEME=Dresden            # choose from: AnnArbor*, Antibes, Bergen, Berkeley, Berlin, Boadilla*, boxes, CambridgeUS*, Copenhagen*, Darmstadt*, default, Dresden, Frankfurt*, Goettingen, Hannover, Ilmenau*, JuanLesPins*, Luebeck, Madrid*, Malmoe, Marburg, Montpellier, PaloAlto*, Pittsburgh, Rochester, Singapore, Szeged, Warsaw* (* = sections are numbered)
-COLORTHEME=default      # choose from: albatross, beaver, beetle, crane, default, dolphin, dove, fly, lily, orchid, rose, seagull, seahorse, sidebartab, structure, whale, wolverine
+THEME=Rochester         # choose from: AnnArbor*, Antibes, Bergen, Berkeley, Berlin, Boadilla*, boxes, CambridgeUS*, Copenhagen*, Darmstadt*, default, Dresden, Frankfurt*, Goettingen, Hannover, Ilmenau*, JuanLesPins*, Luebeck, Madrid*, Malmoe, Marburg, Montpellier, PaloAlto*, Pittsburgh, Rochester, Singapore, Szeged, Warsaw* (* = sections are numbered)
+COLORTHEME=crane       # choose from: albatross, beaver, beetle, crane, default, dolphin, dove, fly, lily, orchid, rose, seagull, seahorse, sidebartab, structure, whale, wolverine
 INNERTHEME=default      # choose from: default, circles, rectangles, rounded, inmargin
 FONTTHEME=structurebold # choose from: default, professionalfonts, structurebold, structureitalicserif, structuresmallcapsserif, serif, sansserif
 LOGO=rectangular_prism.png # may be empty for no logo
 LOGOHEIGHT=0.15         # a fraction, if set
 LOGOUP=                 # a fraction, if set
 LOGOWIDTH=              # a fraction, if set
-LOGOONTITLE=true        # if false, a plain title page is created
+LOGOONTITLE=false       # if false, a plain title page is created
 FONTFAMILY=
 THEMETEX=style.tex
