@@ -63,8 +63,12 @@ following extensions are implemented in `mds`:
      These two-character delineators should appear on a single line
      by themselves. No tabs or spaces are allowed.
 
-     For unequal-width columns, or to have more columns, use the
-     following more general syntax from pandoc:
+     You can have any number of columns.
+
+     For unequal-width columns, you can use more `|` characters to
+     increase the relative size of the next column.
+     
+     You can also use the following more general syntax from pandoc:
 
          ::::::{.columns}
          :::{.column width=0.3}
@@ -122,28 +126,24 @@ in the same directory as the markdown file, and with the same name
 except with the extension .theme instead of .md . It can contain
 assignments of the form SETTING=VALUE. The possible SETTINGs are:
 
-   FONTSIZE      Desired size in points
-                  default: 11
-
-   ASPECTRATIO   Desired aspect ratio of slides
-                  default: 43
-                  possible values: 1610, 169, 149, 54, 43 and 32
-
-   HIGHLIGHT     Desired syntax highlight style
-                  possible values: pygments,  kate,  monochrome,
-                                   espresso,  zenburn, haddock,
-                                   tango
-   
-   THEME         The Beamer theme to use
-   
-   INNERTHEME    The inner theme for beamer to use
-
-   COLORTHEME    The color theme for beamer to use
-   
-   THEMETEX      Additional latex code to use.
-
-Note that the `mdsup` utility will create a .theme file in the
-directory corresponding to the selected THEME.
+| Option      |  Default value |  Meaning                                                      
+|-------------|----------------|-----------------------------------------------------------
+| HIGHLIGHT   |  zenburn       |  Syntax highlight style                    
+| ASPECTRATIO |  169           |  Slide aspect ratio (1610, 169, 149, 54, 43 or 32)
+| LOGO        |                |  Path to a file containing the botton-right logo    
+| LOGOHEIGHT  |  0.1           |  Size of logo relative to the height
+| LOGOWIDTH   |                |  Size of logo relative to the width
+| LOGOUP      |                |  Relative amount to move the logo up (allowed to be negative)
+| LOGOONTITLE |  true          |  Whether the logo should appear on the title page
+| FONTFAMILY  |                |  Name of an installed font
+| FONTSIZE    |  9pt           |  Size of the font
+| THEME       |  Boadilla      |  Beamer theme to use
+| INNERTHEME  |  rounded       |  Beamer 'inner' theme to use
+| FONTTHEME   |  structurebold |  Beamer 'font' theme to use    
+| COLORTHEME  |  orchid        |  Beamer 'color' theme to use
+| HANDOUT     |  false         |  When set to true, omits overlays (e.g. ". . ." pauses)
+| ENGINE      |  pdflatex      |  Program to use to generate the pdf from the LaTeX intermediate
+| THEMETEX    |  style.tex     |  Additional latex to add in the LaTeX preamble
 
 
 Reporting Bugs
