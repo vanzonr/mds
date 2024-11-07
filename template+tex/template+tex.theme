@@ -1,13 +1,13 @@
 HIGHLIGHT=pygments
 ASPECTRATIO=169
 FONTSIZE=10pt
-FONTFAMILY="Open Sans"
 FONTTHEME=structurebold
+FONTFAMILY="Open Sans"
 THEME=default
 COLORTHEME=default
 THEMETEX=style.tex
-LOGO=images/regularslide.png
-LOGOHEIGHT=1
-LOGOWIDTH=1.23
+LOGO=images/logo.png
+LOGOHEIGHT=0.17
 LOGOONTITLE=false
 INNERTHEME=rectangles
+ENGINE=xelatex

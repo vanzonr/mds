@@ -183,7 +183,7 @@ if [ "${LOGOWIDTH:-}" ]; then
 fi
 # check LOGOUP
 if [ "${LOGOUP:-}" ]; then
-    if ! [[ $LOGOUP =~ ^[0-9]*(\.[0-9]+)?$ ]]; then
+    if ! [[ $LOGOUP =~ ^\-?[0-9]*(\.[0-9]+)?$ ]]; then
         echo "ERROR: Invalid number '$LOGOUP' for LOGOUP." 1>&2
         exit 1
     fi

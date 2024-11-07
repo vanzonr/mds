@@ -1,56 +1,8 @@
-% Additional colors
 \definecolor{bluerod}{rgb}{0.03,0.31,0.62}
-\definecolor{silver}{gray}{0.75}
+\definecolor{silver}{gray}{0.6}
 \definecolor{gray80}{gray}{0.8}
 \definecolor{gray15}{gray}{0.15}
-
-% Title page
-\usepackage{tikz}
-\defbeamertemplate*{title page}{customized}[1][]
-{
-\begin{tikzpicture}[remember picture, overlay]
-  \draw[fill=black] (current page.south west) rectangle
-  (current page.north east);
-\end{tikzpicture}%
-\begin{picture}(0,0)
-\put(-165.5,-73.5){\includegraphics[width=16cm,height=9cm]{images/firstslide.png}}
-\put(0,-98){\begin{minipage}{14cm}\begin{flushright}
-\titlefont\color{white}
-  \huge{\bf\inserttitle}\par\ \\
-  \Large\insertauthor\vspace{6pt}\par
-  \large\insertinstitute\vspace{1pt}\par
-  \large\insertdate\vspace{1pt}\par
-  \end{flushright}
-  \end{minipage}}
-\end{picture}
-}
-
-% Section pages
-\setbeamertemplate{section page}{
-\begin{picture}(0,0)
-\put(-30,-180){\includegraphics[width=16.16cm,height=9.09cm]{images/sectionslide.png}}
-\end{picture}
-\vspace{2cm}\\
-    \usebeamerfont{section title}\usebeamercolor[fg]{section title}\color{white}\titlefont\Huge\insertsection
-}
-
-% Title on top of slidesq
-\newfontfamily\titlefont{Ubuntu Light}
-\setbeamertemplate{frametitle}{\vspace{10pt}\titlefont\huge\color{gray15}\insertframetitle}
-
-% Syntax-highlighted code blocks
-\usepackage{tcolorbox}
-\renewenvironment{Shaded}{\begin{tcolorbox}[left=0pt,right=0pt,top=0pt,bottom=0pt,colframe=gray80,colback=gray80,arc=8pt]\small}{\end{tcolorbox}}
-
-% Colors of third-level boxes
-\setbeamercolor{structure}{fg=bluerod,bg=gray80} % itemize, enumerate, etc
-\setbeamercolor{alerted text}{fg=bluerod}
-
-% Slide number at the bottom left
-\setbeamertemplate{footline}[text line]{%
-  \parbox{\linewidth}{\vspace*{-14pt}\hspace*{-4cm}\titlefont{\large\color{silver}\ \ \ \insertframenumber}\hfill}}
-\setbeamertemplate{navigation symbols}{}
-\linespread{.9}
+\definecolor{gray90}{gray}{0.9}
 
 \setbeamercolor{itemize item}{fg=bluerod}
 \setbeamercolor{itemize subitem}{fg=gray15}
@@ -58,3 +10,63 @@
 \setbeamercolor{enumerate item}{fg=bluerod}
 \setbeamercolor{enumerate subitem}{fg=gray15}
 \setbeamercolor{enumerate subsubitem}{fg=gray15} 
+\setbeamercolor{structure}{fg=bluerod,bg=gray80} % itemize, enumerate, etc
+\setbeamercolor{alerted text}{fg=bluerod}
+
+
+% Title page
+\usetikzlibrary{calc}
+\makeatletter
+\newcommand{\queryrightmargin}{\Gm@rmargin}
+\makeatother
+\newcommand{\fudge}{3.0pt}
+\setbeamertemplate{title page}
+{\begin{picture}(0,0)%
+\begin{tikzpicture}[overlay, remember picture]%
+\node[anchor=north west] at ($(current page.north west)+(-\fudge,\fudge)$){\includegraphics[width=\paperwidth,height=\paperheight]{images/firstslide.png}};%
+\end{tikzpicture}%
+\end{picture}%
+\begin{picture}(0,0)%
+\begin{tikzpicture}[overlay, remember picture]%
+\node[anchor=south east] at ($(current page.south east)+(-\queryrightmargin,\queryrightmargin/2)$) {\begin{minipage}{14cm}\begin{flushright}
+\titlefont\color{white}
+  \huge{\bf\inserttitle}\par\ \\
+  \Large\insertauthor\vspace{6pt}\par
+  \large\insertinstitute\vspace{1pt}\par
+  \large\insertdate\vspace{1pt}\par
+  \end{flushright}
+  \end{minipage}};
+\end{tikzpicture}
+\end{picture}%
+}
+
+% Section pages
+\setbeamertemplate{section page}{
+\begin{picture}(0,0)%
+\begin{tikzpicture}[overlay, remember picture]%
+\node[anchor=north west] at ($(current page.north west)+(-\fudge,\fudge)$){\includegraphics[width=\paperwidth,height=\paperheight]{images/sectionslide.png}};%
+\end{tikzpicture}%
+\end{picture}
+\vspace{2cm}\\
+    \usebeamerfont{section title}\usebeamercolor[fg]{section title}\color{white}\titlefont\Huge\insertsection
+}
+
+% Title on top of slides
+\newfontfamily\titlefont{Ubuntu Light}
+\setbeamertemplate{frametitle}{\vspace{10pt}\titlefont\huge\color{gray15}\insertframetitle}
+
+% Syntax-highlighted code blocks
+\usepackage{tcolorbox}
+\renewenvironment{Shaded}{\begin{tcolorbox}[left=0pt,right=0pt,top=0pt,bottom=0pt,colframe=gray80,colback=gray80,arc=8pt]\small}{\end{tcolorbox}}
+
+% Slide number at the bottom left
+\setbeamertemplate{footline}[text line]{\begin{picture}(0,0)\put(0,14){
+\parbox{\linewidth}{\titlefont{\huge\pgfsetfillopacity{0.55}\color{silver}\insertframenumber}\hfill}
+}\end{picture}}
+
+% Set the background color for all slides
+\setbeamertemplate{background}{
+    \begin{tikzpicture}[overlay, remember picture]
+        \fill[gray90] (current page.south west) rectangle (current page.north east);
+    \end{tikzpicture}
+}
