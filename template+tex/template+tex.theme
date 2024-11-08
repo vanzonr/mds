@@ -3,11 +3,15 @@ ASPECTRATIO=169
 FONTSIZE=10pt
 FONTTHEME=structurebold
 FONTFAMILY="Open Sans"
-THEME=default
+THEME=default # Antibes, Bergen, Boadilla, boxes, default, Goettingen, Hannover, Madrid, Marburg, Pittsburgh, Rochester
 COLORTHEME=default
-THEMETEX=style.tex
+if [ $HANDOUT = true ]
+then
+    THEMETEX=""
+fi
 LOGO=images/logo.png
 LOGOHEIGHT=0.17
 LOGOONTITLE=false
 INNERTHEME=rectangles
 ENGINE=xelatex
+

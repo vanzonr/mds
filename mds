@@ -16,6 +16,11 @@ if [ "${MDSQUARTO:-}" = 1 ]; then
 else
     QUARTO=false
 fi
+if [ "${MDSHANDOUT:-}" = 1 ]; then
+    HANDOUT=true
+else
+    HANDOUT=false
+fi
 
 shopt -s expand_aliases
 alias +++=:
@@ -32,6 +37,7 @@ OPTIONS:
   -h    show this help
   -q    pass through quarto for executable blocks
   -d    work in draft mode; figures are included as outlines
+  -t    produce a handout version
   -v    verbose mode
   -vv   more verbosity
   -vvv  more verbosity and show latex output
@@ -43,11 +49,12 @@ EOF
 
 +++ Parsing command line. +++
 
-while getopts "vdqh" option; do
+while getopts "vdqht" option; do
     case $option in
         "v") let VERBOSE=VERBOSE+1; alias +++='echo +++';;
         "d") DRAFT=true;;
         "q") QUARTO=true;;
+        "t") HANDOUT=true;;
         "h") help; exit 0;;
     esac
 done
@@ -86,19 +93,58 @@ INNERTHEME=rounded
 FONTTHEME=structurebold
 COLORTHEME=orchid
 THEMETEX=style.tex
-HANDOUT=false
 ENGINE=pdflatex
 NAME=${1%.*}
 tempfile=$(mktemp --suffix .md)
 
 +++ Override theme settings if NAME.theme exists. +++
 
+function valid_theme_syntax()
+{
+    # only lines allowed of the form VAR=VALUE
+    theme_file="$1"
+    let n=0
+    cat "$theme_file" | while IFS= read -r line; do
+        let n++
+        linefine=true
+        if [ "$line" ]; then
+            eval set Z "${line}" 2>/dev/null
+            if [ $? != 0 ]; then
+                linefine=false;
+            elif [ $# -gt 2 ]; then
+                if ! [ $2 = if -a $3 = '[' -a $# = 7 ]; then
+                    echo $#
+                    linefine=false
+                fi
+            elif [ $# = 2 ]; then
+                if ! [[ $2 =~ = ]]; then
+                    if [ $2 != then -a $2 != fi -a $2 != else ] ; then
+                        linefine=false
+                    fi
+                fi
+            fi
+        fi
+        if ! $linefine; then
+            echo "ERROR: Syntax error in $theme_file, line $n."
+            return 1
+        fi
+    done
+}
+
 if [ -f "$NAME.theme" ]; then
     +++ Found file $NAME.theme and reading settings. +++
-    source "$NAME.theme"
+    if valid_theme_syntax $NAME.theme; then
+        source "$NAME.theme"
+    else
+        exit 1
+    fi
 elif [ -f "style.theme" ]; then
     +++ Found file $NAME.theme and reading settings. +++
-    source "style.theme"
+    if valid_theme_syntax style.theme; then
+        source "style.theme"
+    else
+        exit 1
+    fi
 fi
 
 if [ "$FONTFAMILY" ]; then
