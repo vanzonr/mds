@@ -480,6 +480,10 @@ if ! $LOGOONTITLE; then
     sed -i -e 's/\\frame{\\titlepage}/\\frame[plain]{\\titlepage}/' ${NAME}.tex
 fi
 
++++ remove outline numbering if present +++
+
+sed -i -e 's/\[allowframebreaks\]/\[noframenumbering\]/' ${NAME}.tex
+
 +++ ${NAME}.tex created. +++
 
 if $HANDOUT; then

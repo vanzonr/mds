@@ -4,6 +4,8 @@ author:
  - YOUR NAME
  - NAME OF YOUR COLLABORATOR
 date: DATE
+toc: true
+toc-title: Outline
 ---
 
 # Level 1 Heading = Section
