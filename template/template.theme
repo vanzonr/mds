@@ -12,4 +12,4 @@ LOGOUP=                 # a fraction, if set
 LOGOWIDTH=              # a fraction, if set
 LOGOONTITLE=false       # if false, a plain title page is created
 FONTFAMILY=
-THEMETEX=style.tex
+THEMETEX=
