@@ -85,7 +85,7 @@ LOGO=""
 LOGOHEIGHT=0.1
 LOGOWIDTH=""
 LOGOUP=""
-LOGOONTITLE=true
+PLAINTITLE=false
 FONTFAMILY=""
 FONTSIZE=9pt
 THEME=Boadilla
@@ -154,40 +154,50 @@ if [ "$FONTFAMILY" ]; then
     ENGINE=xelatex
 fi
 
-if (( VERBOSE > 1 )); then
+if [ -n "${LOGOONTITLE:-}" -a -z "${PLAINTTITLE:-}" ]; then
+    if "$LOGOONTITLE"; then
+        PLAINTITLE=false
+    else
+        PLAINTITLE=true
+    fi
+fi
+
+themetexvariables=$(compgen -v|grep THEMETEX_)
+
+if (( VERBOSE > 1 )); then   
     +++ The following settings will be used: +++
-    for setting in HIGHLIGHT ASPECTRATIO LOGO LOGOUP LOGOWIDTH LOGOHEIGHT LOGOONTITLE FONTFAMILY FONTSIZE THEME INNERTHEME FONTTHEME COLORTHEME THEMETEX HANDOUT ENGINE NAME DRAFT VERBOSE QUARTO
+    for setting in HIGHLIGHT ASPECTRATIO LOGO LOGOUP LOGOWIDTH LOGOHEIGHT PLAINTITLE FONTFAMILY FONTSIZE THEME INNERTHEME FONTTHEME COLORTHEME THEMETEX HANDOUT ENGINE NAME DRAFT VERBOSE QUARTO $themetexvariables
     do
         printf "+++ $setting\t${!setting}\n"
     done
 fi
 
 +++ Check that the settings are valid +++
-+++ CHECK MAIN THEME +++
++++ Check MAIN THEME +++
 validTHEMES="/AnnArbor/Antibes/Bergen/Berkeley/Berlin/Boadilla/boxes/CambridgeUS/Copenhagen/Darmstadt/default/Dresden/Frankfurt/Goettingen/Hannover/Ilmenau/JuanLesPins/Luebeck/Madrid/Malmoe/Marburg/Montpellier/PaloAlto/Pittsburgh/Rochester/Singapore/Szeged/Warsaw/"
 if ! [[  $validTHEMES =~ /${THEME}/ ]]; then
     echo "ERROR: Invalid THEME '$THEME'. Valid choices are:${validTHEMES//\// }" 1>&2
     exit 1
 fi
-+++ CHECK COLORTHEME +++
++++ Check COLORTHEME +++
 validCOLORTHEMES="/albatross/beaver/beetle/crane/default/dolphin/dove/fly/lily/orchid/rose/seagull/seahorse/sidebartab/structure/whale/wolverine/"
 if ! [[  $validCOLORTHEMES =~ /${COLORTHEME}/ ]]; then
     echo "ERROR: Invalid COLORTHEME '$COLORTHEME'. Valid choices are:${validCOLORTHEMES//\// }" 1>&2
     exit 1
 fi
-+++ check INNERTHEME +++
++++ Check INNERTHEME +++
 validINNERTHEMES="/default/circles/rectangles/rounded/inmargin/"
 if ! [[  $validINNERTHEMES =~ /${INNERTHEME}/ ]]; then
     echo "ERROR: Invalid INNERTHEME '$INNERTHEME'. Valid choices are:${validINNERTHEMES//\// }" 1>&2
     exit 1
 fi
-+++ check FONTTHEME +++
++++ Check FONTTHEME +++
 validFONTTHEMES="/default/professionalfonts/structurebold/structureitalicserif/structuresmallcapsserif/serif/sansserif/"
 if ! [[  $validFONTTHEMES =~ /${FONTTHEME}/ ]]; then
     echo "ERROR: Invalid FONTTHEME '$FONTTHEME'. Valid choices are:${validFONTTHEMES//\// }" 1>&2
     exit 1
 fi
-+++ check HIGHLIGHT +++
++++ Check HIGHLIGHT +++
 if [ "${HIGHLIGHT:-}" ]; then
     validHIGHLIGHTS=/$(pandoc --list-highlight-styles | tr '\r\n' '/')/
 #    validHIGHLIGHTS=/${validHIGHLIGHTS//
@@ -197,7 +207,7 @@ if [ "${HIGHLIGHT:-}" ]; then
         exit 1
     fi
 fi
-+++ check ASPECTRATIO +++
++++ Check ASPECTRATIO +++
 if [ "${ASPECTRATIO:-}" ]; then
     validASPECTRATIOS="/1610/169/149/54/43/32/"
     if ! [[  $validASPECTRATIOS =~ /${ASPECTRATIO}/ ]]; then
@@ -205,36 +215,36 @@ if [ "${ASPECTRATIO:-}" ]; then
         exit 1
     fi
 fi
-+++ check LOGOONTITLE +++
-if [ "${LOGOONTITLE:-}" ]; then
-    validLOGOONTITLES="/true/false/"
-    if ! [[  $validLOGOONTITLES =~ /${LOGOONTITLE}/ ]]; then
-        echo "ERROR: Invalid value '$LOGOONTITLE' for LOGOONTITLE. Valid choices are:${validLOGOONTITLES//\// }" 1>&2
++++ Check PLAINTITLE +++
+if [ "${PLAINTITLE:-}" ]; then
+    validPLAINTITLES="/true/false/"
+    if ! [[  $validPLAINTITLES =~ /${PLAINTITLE}/ ]]; then
+        echo "ERROR: Invalid value '$PLAINTITLE' for PLAINTITLE. Valid choices are:${validPLAINTITLES//\// }" 1>&2
         exit 1
     fi
 fi
-+++ check LOGOHEIGHT +++
++++ Check LOGOHEIGHT +++
 if [ "${LOGOHEIGHT:-}" ]; then
     if ! [[ $LOGOHEIGHT =~ ^[0-9]*(\.[0-9]+)?$ ]]; then
         echo "ERROR: Invalid number '$LOGOHEIGHT' for LOGOHEIGHT." 1>&2
         exit 1
     fi
 fi
-+++ check LOGOWIDTH +++
++++ Check LOGOWIDTH +++
 if [ "${LOGOWIDTH:-}" ]; then
     if ! [[ $LOGOWIDTH =~ ^[0-9]*(\.[0-9]+)?$ ]]; then
         echo "ERROR: Invalid number '$LOGOWIDTH' for LOGOWIDTH." 1>&2
         exit 1
     fi
 fi
-+++ check LOGOUP +++
++++ Check LOGOUP +++
 if [ "${LOGOUP:-}" ]; then
     if ! [[ $LOGOUP =~ ^\-?[0-9]*(\.[0-9]+)?$ ]]; then
         echo "ERROR: Invalid number '$LOGOUP' for LOGOUP." 1>&2
         exit 1
     fi
 fi
-+++ check LOGO +++
++++ Check LOGO +++
 if [ "${LOGO:-}" ]; then
   compatibleTHEMES="/AnnArbor/Antibes/Bergen/Berkeley/Berlin/Boadilla/boxes/CambridgeUS/Copenhagen/Darmstadt/default/Dresden/Frankfurt/Ilmenau/JuanLesPins/Luebeck/Madrid/Malmoe/Montpellier/PaloAlto/Pittsburgh/Rochester/Singapore/Szeged/Warsaw/"
     if ! [[  $compatibleTHEMES =~ /${THEME}/ ]]; then
@@ -247,7 +257,7 @@ if [ "${LOGO:-}" ]; then
         exit 2
     fi
 fi
-+++ check FONTSIZE +++
++++ Check FONTSIZE +++
 if [ "${FONTSIZE:-}" ]; then
     validFONTSIZES="/8pt/9pt/10pt/11pt/12pt/14pt/17pt/20pt/"
     if ! [[  $validFONTSIZES =~ /${FONTSIZE}/ ]]; then
@@ -255,7 +265,7 @@ if [ "${FONTSIZE:-}" ]; then
         exit 1
     fi
 fi
-+++ check FONTFAMILY +++
++++ Check FONTFAMILY +++
 if [ "${FONTFAMILY:-}" ]; then
     validFONTFAMILIES=$(fc-list : family | tr ',' '\n' | sort -u)
     validFONTFAMILIES=/${validFONTFAMILIES//
@@ -265,11 +275,45 @@ if [ "${FONTFAMILY:-}" ]; then
         exit 1
     fi
 fi
-+++ check THEMETEX +++
++++ Check THEMETEX +++
 if [ "${THEMETEX:-}" ]; then
     if ! [ -f "$THEMETEX" ]; then
         echo "ERROR: THEMETEX file '$THEMETEX' does not exist." 1>&2
         exit 2
+    fi
+fi
+
+if [ -n "$themetexvariables" ]; then
+    +++ Finding catsub +++
+    if which catsub >& /dev/null; then
+        CATSUB=`which catsub`
+    elif [ -f catsub ]; then
+        CATSUB=`./catsub`
+    else
+        CATSUB=$(find . -maxdepth 4 -name catsub -type f -executable)
+    fi
+    if ! [ -f "${CATSUB}" ]; then
+        echo "ERROR: catsub utility required but not found" 1>&2
+        exit 3
+    fi
+    +++ Replace THEMETEX variables +++
+    catsubcommand="$CATSUB"
+    catsubcommand="$catsubcommand $THEMETEX"
+    for setting in $themetexvariables; do
+        catsubcommand="$catsubcommand %$setting '${!setting}'"
+    done
+    realthemetex="real$(basename $THEMETEX)"
+    catsubcommand="$catsubcommand > $realthemetex"
+    if (( $VERBOSE > 1)); then
+        echo "+++ Executing: $catsubcommand"
+    fi
+    eval $catsubcommand
+    THEMETEX=$realthemetex
+    if ! [ -f "$THEMETEX" ]; then
+        echo "ERROR: temporary THEMETEX file '$THEMETEX' does not exist." 1>&2
+        exit 2
+    else
+        +++ Generated $realthemetex +++
     fi
 fi
 
@@ -475,7 +519,7 @@ fi
 
 pandoc -t beamer -s ${SLIDELEVEL:-} --highlight-style=$HIGHLIGHT --wrap=none "$tempfile" -o ${NAME}.tex
 
-if ! $LOGOONTITLE; then
+if $PLAINTITLE; then
     +++ Removing logo from the title slide +++
     sed -i -e 's/\\frame{\\titlepage}/\\frame[plain]{\\titlepage}/' ${NAME}.tex
 fi
@@ -547,4 +591,5 @@ fi
 
 +++ Get rid off intermediates but leave latex source in case you want to tweak it +++
 
-rm -f ${NAME}.nav ${NAME}.snm ${NAME}.vrb ${NAME}.lot ${NAME}.toc ${NAME}.aux ${NAME}.aux.bak ${NAME}.log ${NAME}.out ${NAME}.bbl ${NAME}.end ${NAME}.blg ${NAME}.stdout ${NAME}.xdv "$tempfile"
+rm -f ${NAME}.nav ${NAME}.snm ${NAME}.vrb ${NAME}.lot ${NAME}.toc ${NAME}.aux ${NAME}.aux.bak ${NAME}.log ${NAME}.out ${NAME}.bbl ${NAME}.end ${NAME}.blg ${NAME}.stdout ${NAME}.xdv "$tempfile" 
+

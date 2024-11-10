@@ -3,7 +3,8 @@
 \definecolor{gray15}{gray}{0.15}
 \definecolor{gray70}{gray}{0.7}
 \definecolor{gray80}{gray}{0.8}
-\definecolor{gray90}{gray}{0.9}
+\definecolor{slidebgcolor}{rgb}{%THEMETEX_BACKGROUNDCOLOR}
+\definecolor{slidefgcolor}{rgb}{%THEMETEX_FOREGROUNDCOLOR}
 
 \setbeamercolor{itemize item}{fg=bluerod}
 \setbeamercolor{itemize subitem}{fg=gray15}
@@ -24,7 +25,8 @@
 \setbeamertemplate{title page}
 {\begin{picture}(0,0)%
 \begin{tikzpicture}[overlay, remember picture]%
-\node[anchor=north west] at ($(current page.north west)+(-\fudge,\fudge)$){\includegraphics[width=\paperwidth,height=\paperheight]{images/firstslide.png}};%
+%\node[anchor=north west] at ($(current page.north west)+(-\fudge,\fudge)$){\includegraphics[width=\paperwidth,height=\paperheight]{images/firstslide.png}};%
+\node[anchor=north west] at ($(current page.north west)+(-\fudge,\fudge)$){\includegraphics[width=\paperwidth,height=\paperheight]{%THEMETEX_TITLEIMAGE}};%
 \end{tikzpicture}%
 \end{picture}%
 \begin{picture}(0,0)%
@@ -45,7 +47,7 @@
 \setbeamertemplate{section page}{
 \begin{picture}(0,0)%
 \begin{tikzpicture}[overlay, remember picture]%
-\node[anchor=north west] at ($(current page.north west)+(-\fudge,\fudge)$){\includegraphics[width=\paperwidth,height=\paperheight]{images/sectionslide.png}};%
+\node[anchor=north west] at ($(current page.north west)+(-\fudge,\fudge)$){\includegraphics[width=\paperwidth,height=\paperheight]{%THEMETEX_SECTIONIMAGE}};%
 \end{tikzpicture}%
 \end{picture}
 \vspace{2cm}\\
@@ -68,6 +70,8 @@
 % Set the background color for all slides
 \setbeamertemplate{background}{
     \begin{tikzpicture}[overlay, remember picture]
-        \fill[gray90] (current page.south west) rectangle (current page.north east);
+        \fill[slidebgcolor] (current page.south west) rectangle (current page.north east);
     \end{tikzpicture}
 }
+\setbeamercolor{normal text}{fg=slidefgcolor,bg=slidebgcolor}
+
