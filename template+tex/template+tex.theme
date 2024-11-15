@@ -9,14 +9,8 @@ LOGO=images/logo.png
 LOGOHEIGHT=0.17
 PLAINTITLE=true
 INNERTHEME=rectangles
-if [ $HANDOUT = false ]
-then
-    THEMETEX="style.tex"
-else
-    THEMETEX="stylehandout.tex"
-fi
+THEMETEX=style.tex
 THEMETEX_TITLEIMAGE=images/firstslide.png
 THEMETEX_SECTIONIMAGE=images/sectionslide.png
 THEMETEX_BACKGROUNDCOLOR=0.9,0.9,0.9
 THEMETEX_FOREGROUNDCOLOR=0.0,0.0,0.0
-

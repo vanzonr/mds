@@ -108,7 +108,7 @@ function valid_theme_syntax()
         let n++
         linefine=true
         if [ "$line" ]; then
-            eval set Z "${line}" 2>/dev/null
+            eval set Z "${line//\$/\\\$}" 2>/dev/null
             if [ $? != 0 ]; then
                 linefine=false;
             elif [ $# -gt 2 ]; then
@@ -154,6 +154,7 @@ if [ "$FONTFAMILY" ]; then
     ENGINE=xelatex
 fi
 
+# map oldstyle LOGOONTITLE to the reverse in PLAINTITLE
 if [ -n "${LOGOONTITLE:-}" -a -z "${PLAINTTITLE:-}" ]; then
     if "$LOGOONTITLE"; then
         PLAINTITLE=false
@@ -162,7 +163,8 @@ if [ -n "${LOGOONTITLE:-}" -a -z "${PLAINTTITLE:-}" ]; then
     fi
 fi
 
-themetexvariables=$(compgen -v|grep THEMETEX_)
++++ Find latex theme template settings +++
+themetexvariables=$(compgen -v|grep THEMETEX_ || true)
 
 if (( VERBOSE > 1 )); then   
     +++ The following settings will be used: +++
@@ -275,12 +277,27 @@ if [ "${FONTFAMILY:-}" ]; then
         exit 1
     fi
 fi
++++ Check HANDOUT +++
+if [ "${HANDOUT:-}" ]; then
+    validHANDOUTS="/true/false/"
+    if ! [[  $validHANDOUTS =~ /${HANDOUT}/ ]]; then
+        echo "ERROR: Invalid value '$HANDOUT' for HANDOUT. Valid choices are:${validHANDOUTS//\// }" 1>&2
+        exit 1
+    fi
+fi
 +++ Check THEMETEX +++
 if [ "${THEMETEX:-}" ]; then
     if ! [ -f "$THEMETEX" ]; then
         echo "ERROR: THEMETEX file '$THEMETEX' does not exist." 1>&2
         exit 2
     fi
+fi
+
+if $HANDOUT; then
+    +++ Append postfix because handout +++
+    POSTFIX="_handout"
+else
+    POSTFIX=""
 fi
 
 if [ -n "$themetexvariables" ]; then
@@ -302,7 +319,7 @@ if [ -n "$themetexvariables" ]; then
     for setting in $themetexvariables; do
         catsubcommand="$catsubcommand %$setting '${!setting}'"
     done
-    realthemetex="real$(basename $THEMETEX)"
+    realthemetex="real$(basename $THEMETEX)${POSTFIX}"
     catsubcommand="$catsubcommand > $realthemetex"
     if (( $VERBOSE > 1)); then
         echo "+++ Executing: $catsubcommand"
@@ -516,6 +533,8 @@ fi
 if grep -q '^## ' "$tempfile"; then
     SLIDELEVEL="--slide-level 2"
 fi
+
+NAME=${NAME}${POSTFIX}
 
 pandoc -t beamer -s ${SLIDELEVEL:-} --highlight-style=$HIGHLIGHT --wrap=none "$tempfile" -o ${NAME}.tex
 
