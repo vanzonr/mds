@@ -148,7 +148,8 @@ assignments of the form SETTING=VALUE. The possible SETTINGs are:
 | LOGOHEIGHT  |  0.1           |  Size of logo relative to the height
 | LOGOWIDTH   |                |  Size of logo relative to the width
 | LOGOUP      |                |  Relative amount to move the logo up (allowed to be negative)
-| LOGOONTITLE |  true          |  Whether the logo should appear on the title page
+| LOGOONTITLE |  true          |  Whether the logo should appear on the title page (deprecated, equivalent to the opposite of PLAINTITLE)
+| PLAINTITLE  |  false         |  Whether the title page should not have the theme of regular slides (with logo etc.)
 | FONTFAMILY  |                |  Name of an installed font
 | FONTSIZE    |  9pt           |  Size of the font
 | THEME       |  Boadilla      |  Beamer theme to use

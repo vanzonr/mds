@@ -10,6 +10,6 @@ LOGO=rectangular_prism.png # may be empty for no logo
 LOGOHEIGHT=0.15         # a fraction, if set
 LOGOUP=                 # a fraction, if set
 LOGOWIDTH=              # a fraction, if set
-LOGOONTITLE=false       # if false, a plain title page is created
+PLAINTITLE=true         # if false, title page looks like a regular slide
 FONTFAMILY=
 THEMETEX=
