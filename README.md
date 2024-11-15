@@ -8,6 +8,9 @@ text formats to other formats (see https://pandoc.org), while
 `pdflatex` is the pdf version of the document preparation system LaTeX
 (see e.g. https://www.tug.org/texlive).
 
+It also uses the substitution utility `catsub`, which is included as a
+git submodule.
+
 mds is written in bash.
 
 Prerequisites
@@ -15,13 +18,21 @@ Prerequisites
   - bash
   - pandoc
   - pdflatex
+  - python (for catsub)
 
 Installation
 ============
 
-To install, simply clone the mds git repo, and add the directory to
-the PATH environment variable.  Alternatively, you can invoke `mds`
-using the full paths to its location.
+To install, simply clone the `mds` git repository including the submodule `catsub`:
+
+```
+git clone --recursive https://github.com/vanzonr/mds 
+```
+
+and add the directory to the PATH environment variable.
+
+Alternatively, you can invoke `mds`
+using the full paths to its location, or copy `mds` and `catsub` to the directory containing your markdown source.
 
 Usage of `mds`
 ==============
@@ -37,6 +48,7 @@ OPTIONS:
   * -v  verbose mode
   * -vv more verbose mode
   * -vvv most verbose mode
+  * -t produce a handout version
   * -q  call quarto to execute blocks; experimental and requires additionally quarto, r and knitr.
   
 Extended Markdown Syntax
@@ -92,6 +104,8 @@ following extensions are implemented in `mds`:
      fraction of the slide width. `\setrelfigheight{fraction}` does
      the same for the height.  Both commands may be necessary to force
      a picture to be enlarged beyond about 1/2 the size of the slide.
+
+     Current pandoc versions support a better syntax for this, using `{width=X%}` or `{height=X%}` following the `![](FILENAME)`.
     
   4. Adding empty lines with `.`
 

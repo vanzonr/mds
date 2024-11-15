@@ -1,0 +1,3 @@
+[submodule "submodules/catsub"]
+	path = submodules/catsub
+	url = https://github.com/vanzonr/catsub
