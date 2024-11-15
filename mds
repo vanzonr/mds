@@ -304,13 +304,13 @@ if [ -n "$themetexvariables" ]; then
     +++ Finding catsub +++
     if which catsub >& /dev/null; then
         CATSUB=`which catsub`
-    elif [ -f catsub ]; then
-        CATSUB=`./catsub`
-    else
-        CATSUB=$(find . -maxdepth 4 -name catsub -type f -executable)
+    elif [ -x ./catsub ]; then
+        CATSUB="./catsub"
+    elif [ -x ./catsub/catsub ]; then
+        CATSUB="./catsub/catsub"
     fi
-    if ! [ -f "${CATSUB}" ]; then
-        echo "ERROR: catsub utility required but not found" 1>&2
+    if ! [ -f "${CATSUB:-}" ]; then
+        echo "ERROR: catsub utility required but not found. Possible fix is to copy catsub to the current directory." 1>&2
         exit 3
     fi
     +++ Replace THEMETEX variables +++
