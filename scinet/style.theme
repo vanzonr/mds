@@ -1,0 +1,11 @@
+HIGHLIGHT=zenburn
+ASPECTRATIO=169
+FONTSIZE=9pt
+THEME=Boadilla
+INNERTHEME=rounded
+FONTTHEME=structurebold
+COLORTHEME=orchid
+THEMETEX=style.tex
+LOGO=logos.png
+LOGOHEIGHT=0.15
+LOGOUP=-0.03

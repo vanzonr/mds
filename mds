@@ -446,7 +446,7 @@ sed -i -e "s/\(\`\`\`\`*{\)\(.*\)\( include=\)\([^} ]*\)\( startLine=\)\([^} ]*\
 
 +++ Make pause sequence more robust by adding empty lines +++
 
-sed -i -e "s/^\([[:space:]]*\. \. \.\)$/\n\1\n/" "$tempfile"
+sed -i -e "s/^\([[:space:]]*. . .\)$/\n\1\n/" "$tempfile"
 
 +++ Add theme settings in yaml header. +++
 
