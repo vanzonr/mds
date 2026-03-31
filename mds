@@ -358,6 +358,16 @@ function replacecolumns()
                 firstcolwidth=$colcount
                 \rm -f "$tempfile"
                 touch "$tempfile"
+            elif [ "$line" = "[[[" ]; then
+                colcount=2
+                firstcolwidth=$colcount
+                \rm -f "$tempfile"
+                touch "$tempfile"
+            elif [ "$line" = "[[[[" ]; then
+                colcount=3
+                firstcolwidth=$colcount
+                \rm -f "$tempfile"
+                touch "$tempfile"
             else
                 echo "$line"
             fi
@@ -376,7 +386,7 @@ function replacecolumns()
                 local colstart2=":::{.column width=0.$((2*(97-colcount)/colcount))}"
                 local colstart3=":::{.column width=0.$((3*(97-colcount)/colcount))}"
                 echo "::::::columns"
-                echo "$colstart"
+                echo ":::{.column width=0.$((firstcolwidth*(97-colcount)/colcount))}"
                 echo "$blockstart"
                 cat "$tempfile" | while IFS= read -r line ; do
                     case "$line" in
