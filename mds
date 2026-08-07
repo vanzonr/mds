@@ -1,33 +1,12 @@
 #!/bin/bash
-set -eu
 
-if [ "${MDSDRAFT:-}" = 1 ]; then
-    DRAFT=true;
-else
-    DRAFT=false
-fi
-if [ "${MDSVERBOSE:-}" = 1 ]; then
-    VERBOSE=1
-else
-    VERBOSE=0
-fi
-if [ "${MDSQUARTO:-}" = 1 ]; then
-    QUARTO=true
-else
-    QUARTO=false
-fi
-if [ "${MDSHANDOUT:-}" = 1 ]; then
-    HANDOUT=true
-else
-    HANDOUT=false
-fi
-
+set -euo pipefail
 shopt -s expand_aliases
 alias +++=:
 
 help() {
     cat <<EOF
-mds converts a markdown file into pdf using pandoc and latex.
+mds converts a markdown file into PDF using pandoc and latex.
 
 Usage:
 
@@ -38,44 +17,70 @@ OPTIONS:
   -q    pass through quarto for executable blocks
   -d    work in draft mode; figures are included as outlines
   -t    produce a handout version
+  -p    preserve the intermediate latex file that pandoc produces
   -v    verbose mode
   -vv   more verbosity
   -vvv  more verbosity and show latex output
   
 MARKDOWNFILE can use extended pandoc markdown syntax.
 
+If no MARKDOWNFILE.theme file exists, one is created, as well
+as a MARKDOWNFILE.theme.tex. These files can be edited to change
+the look of the slides.
+
 EOF
 }
 
-+++ Parsing command line. +++
+parsingcomment="+++ Parsing command line options. +++
+"
 
-while getopts "vdqht" option; do
+DRAFT=false
+QUARTO=false
+HANDOUT=false
+VERBOSE=0
+PRESERVELATEX=false
+while getopts "vdqhtp" option; do
     case $option in
-        "v") let VERBOSE=VERBOSE+1; alias +++='echo +++';;
+        "v") let VERBOSE=VERBOSE+1; alias +++='echo +++'; echo -n "$parsingcomment"; parsingcomment="";;
         "d") DRAFT=true;;
         "q") QUARTO=true;;
         "t") HANDOUT=true;;
+        "p") PRESERVELATEX=true;;
         "h") help; exit 0;;
     esac
 done
-while [ "${1:0:1}" = "-" ]; do shift; done
+# remove all option arguments, allowing -- as an end-of-options marker
+while [ $# != 0 ]; do
+    [ "${1:0:2}" = "--" ] && shift && break
+    [ "${1:0:1}" = "-" ] && shift || break
+done
 
 +++ Checking for command line errors. +++
-if [ ! -f "$1" ]; then
-    echo "ERROR ($0): File '$1' not found." 1>&2
+
+if [ $# = 0 ]; then
+    echo "ERROR ($0): No MARKDOWNFILE command argument." 1>&2
     help
+    exit 1
+elif [ ! -f "$1" ]; then
+    echo "ERROR ($0): File '$1' not found." 1>&2
+    help 1>&2
     exit 1
 else
     +++ Found file $1. +++
 fi
 if (( $# > 1 )); then 
-    echo "ERROR ($0): Extraneous command arguments given." 1>&2
-    help
+    echo "ERROR ($0): Extraneous command arguments: ${@:2}." 1>&2
+    help 1>&2
     exit 1
 fi
 
-which pandoc >& /dev/null || module load pandoc || return 1
-which xelatex >& /dev/null || module load texlive || return 1
+which pandoc >& /dev/null || module load pandoc || exit 1
+which xelatex >& /dev/null || module load texlive || exit 1
+
++++ Determine markdown file base name and temporary file name +++ 
+
+NAME=${1%.*}
+tempfile=$(mktemp --suffix .md)
 
 +++ Starting with default theme settings. +++
 
@@ -92,10 +97,9 @@ THEME=Boadilla
 INNERTHEME=rounded
 FONTTHEME=structurebold
 COLORTHEME=orchid
-THEMETEX=style.tex
+if [ -f style.tex ]; then THEMETEX=style.tex ; else THEMETEX=""; fi
 ENGINE=pdflatex
-NAME=${1%.*}
-tempfile=$(mktemp --suffix .md)
+
 
 +++ Override theme settings if NAME.theme exists. +++
 
@@ -134,6 +138,7 @@ function valid_theme_syntax()
 if [ -f "$NAME.theme" ]; then
     +++ Found file $NAME.theme and reading settings. +++
     if valid_theme_syntax $NAME.theme; then
+        HERE=$(dirname "$NAME.theme")
         source "$NAME.theme"
     else
         exit 1
@@ -141,10 +146,42 @@ if [ -f "$NAME.theme" ]; then
 elif [ -f "style.theme" ]; then
     +++ Found file $NAME.theme and reading settings. +++
     if valid_theme_syntax style.theme; then
+        HERE=$(dirname "style.theme")
         source "style.theme"
     else
         exit 1
     fi
+else
+    +++ Generating a template theme file \"$NAME.theme\" +++
+    if [ -z "$THEMETEX" ]; then
+        if ! [ -f "$NAME.theme.tex" ]; then
+            THEMETEX="$NAME.theme.tex"
+            echo "% THEMETEX file for $NAME.md" > "$THEMETEX"
+            echo "% additional preamble latex code can be put in this file" >> "$THEMETEX"
+            echo "\renewcommand{\sectionname}{%THEMETEX_SECTIONNAME} % sets the name to use for sections in section slides to the variable specified in $NAME.theme" >> "$THEMETEX"
+            THEMETEX_SECTIONNAME="Part"
+        fi
+    fi
+    cat > "$NAME.theme" <<-EOF
+	# Theme file for $NAME.md
+	# note: no spaces around the equal sign allowed!
+	HIGHLIGHT=$HIGHLIGHT
+	ASPECTRATIO=$ASPECTRATIO
+	LOGO="$LOGO"
+	LOGOHEIGHT=$LOGOHEIGHT
+	LOGOWIDTH="$LOGOWIDTH"
+	LOGOUP="$LOGOUP"
+	PLAINTITLE=$PLAINTITLE    # true or false
+	FONTFAMILY="$FONTFAMILY"
+	FONTSIZE=$FONTSIZE
+	THEME=$THEME
+	INNERTHEME=$INNERTHEME
+	FONTTHEME=$FONTTHEME
+	COLORTHEME=$COLORTHEME
+	THEMETEX="$HERE/$THEMETEX"
+	THEMETEX_SECTIONNAME="Part"
+	ENGINE=$ENGINE
+EOF
 fi
 
 if [ "$FONTFAMILY" ]; then
@@ -164,6 +201,7 @@ if [ -n "${LOGOONTITLE:-}" -a -z "${PLAINTTITLE:-}" ]; then
 fi
 
 +++ Find latex theme template settings +++
+
 themetexvariables=$(compgen -v|grep THEMETEX_ || true)
 
 if (( VERBOSE > 1 )); then   
@@ -202,8 +240,6 @@ fi
 +++ Check HIGHLIGHT +++
 if [ "${HIGHLIGHT:-}" ]; then
     validHIGHLIGHTS=/$(pandoc --list-highlight-styles | tr '\r\n' '/')/
-#    validHIGHLIGHTS=/${validHIGHLIGHTS//
-#/\/}/
     if ! [[  $validHIGHLIGHTS =~ /${HIGHLIGHT}/ ]]; then
         echo "ERROR: Invalid HIGHLIGHT style '$HIGHLIGHT'. Valid choices are:${validHIGHLIGHTS//\// }" 1>&2
         exit 1
@@ -305,7 +341,7 @@ if [ -n "$themetexvariables" ]; then
     if which catsub >& /dev/null; then
         CATSUB=`which catsub`
     elif [ -f catsub ]; then
-        CATSUB=`./catsub`
+        CATSUB="./catsub"
     else
         CATSUB=$(find . -maxdepth 4 -name catsub -type f -executable)
     fi
@@ -530,7 +566,12 @@ fi
 
 if $QUARTO; then
     +++ quarto calls for execution +++
-    tempqmdfile="${1//.qmd/-tmp}.qmd"  # "$(mktemp -p. tmp.XXXXXXXX.qmd)"
+    which quarto >& /dev/null || module load quarto || exit 2
+    # Using knitr as an engine, which requires R and the R package knitr
+    which R >& /dev/null || module load r-bundle-bioconductor || exit 2
+    #tempqmdfile="$(mktemp -p. tmp.XXXXXXXX.qmd)"
+    #tempqmdfile="${1//.qmd/-tmp}.qmd"
+    tempqmdfile="${NAME}-tmp.qmd"
     \cp $tempfile $tempqmdfile
     /usr/bin/time quarto render $tempqmdfile --to beamer --quiet
     \cp ${tempqmdfile/.qmd/.beamer.md} ${tempfile}
@@ -620,5 +661,10 @@ fi
 
 +++ Get rid off intermediates but leave latex source in case you want to tweak it +++
 
-rm -f ${NAME}.nav ${NAME}.snm ${NAME}.vrb ${NAME}.lot ${NAME}.toc ${NAME}.aux ${NAME}.aux.bak ${NAME}.log ${NAME}.out ${NAME}.bbl ${NAME}.end ${NAME}.blg ${NAME}.stdout ${NAME}.xdv "$tempfile" 
+rm -f ${NAME}.nav ${NAME}.snm ${NAME}.vrb ${NAME}.lot ${NAME}.toc ${NAME}.aux ${NAME}.aux.bak ${NAME}.log ${NAME}.out ${NAME}.bbl ${NAME}.end ${NAME}.blg ${NAME}.stdout ${NAME}.xdv "$tempfile"
+
+if ! "$PRESERVELATEX"; then
+    +++ Remove latex source too +++
+    rm -f "${NAME}.tex" "$realthemetex"
+fi
 
