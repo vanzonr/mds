@@ -1,0 +1,18 @@
+# Theme file for mds
+# note: no spaces around the equal sign allowed!
+HIGHLIGHT=zenburn
+ASPECTRATIO=169
+LOGO="$HERE/logo.png"
+LOGOHEIGHT=0.1
+LOGOWIDTH=""
+LOGOUP=""
+PLAINTITLE=false    # true or false
+FONTFAMILY=""
+FONTSIZE=9pt
+THEME=Boadilla
+INNERTHEME=rounded
+FONTTHEME=structurebold
+COLORTHEME=orchid
+THEMETEX="$HERE/style.theme.tex"
+THEMETEX_SECTIONNAME="Part"
+ENGINE=pdflatex

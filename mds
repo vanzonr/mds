@@ -4,7 +4,8 @@ set -euo pipefail
 shopt -s expand_aliases
 alias +++=:
 
-help() {
+function help()
+{
     cat <<EOF
 mds converts a markdown file into PDF using pandoc and latex.
 
@@ -24,11 +25,44 @@ OPTIONS:
   
 MARKDOWNFILE can use extended pandoc markdown syntax.
 
-If no MARKDOWNFILE.theme file exists, one is created, as well
-as a MARKDOWNFILE.theme.tex. These files can be edited to change
-the look of the slides.
+If no MARKDOWNFILE.theme directory exists, one is created, and
+populated with an example theme consisting of three files:
+style.theme, style.theme.tex, and logo.png.
+These files can be edited to change the look of the slides.
 
 EOF
+}
+
+function valid_theme_syntax()
+{
+    # only lines allowed of the form VAR=VALUE
+    theme_file="$1"
+    let n=0
+    cat "$theme_file" | while IFS= read -r line; do
+        let n++
+        linefine=true
+        if [ "$line" ]; then
+            eval set Z "${line//\$/\\\$}" 2>/dev/null
+            if [ $? != 0 ]; then
+                linefine=false;
+            elif [ $# -gt 2 ]; then
+                if ! [ $2 = if -a $3 = '[' -a $# = 7 ]; then
+                    echo $#
+                    linefine=false
+                fi
+            elif [ $# = 2 ]; then
+                if ! [[ $2 =~ = ]]; then
+                    if [ $2 != then -a $2 != fi -a $2 != else ] ; then
+                        linefine=false
+                    fi
+                fi
+            fi
+        fi
+        if ! $linefine; then
+            echo "ERROR: Syntax error in $theme_file, line $n."
+            return 1
+        fi
+    done
 }
 
 parsingcomment="+++ Parsing command line options. +++
@@ -103,39 +137,21 @@ ENGINE=pdflatex
 
 +++ Override theme settings if NAME.theme exists. +++
 
-function valid_theme_syntax()
-{
-    # only lines allowed of the form VAR=VALUE
-    theme_file="$1"
-    let n=0
-    cat "$theme_file" | while IFS= read -r line; do
-        let n++
-        linefine=true
-        if [ "$line" ]; then
-            eval set Z "${line//\$/\\\$}" 2>/dev/null
-            if [ $? != 0 ]; then
-                linefine=false;
-            elif [ $# -gt 2 ]; then
-                if ! [ $2 = if -a $3 = '[' -a $# = 7 ]; then
-                    echo $#
-                    linefine=false
-                fi
-            elif [ $# = 2 ]; then
-                if ! [[ $2 =~ = ]]; then
-                    if [ $2 != then -a $2 != fi -a $2 != else ] ; then
-                        linefine=false
-                    fi
-                fi
-            fi
+if [ -d "$NAME.theme" ]; then
+    +++ Found directory $NAME.theme and looking for settings. +++
+    themefile=$(find "$NAME.theme/" -type f -name '*.theme' | head -n 1)
+    if [ -f "$themefile" ]; then
+        +++ Found file $themefile and reading settings. +++
+        if valid_theme_syntax $themefile; then
+            HERE=$(dirname "$themefile")
+            source "$themefile"
+        else
+            exit 1
         fi
-        if ! $linefine; then
-            echo "ERROR: Syntax error in $theme_file, line $n."
-            return 1
-        fi
-    done
-}
-
-if [ -f "$NAME.theme" ]; then
+    else
+        exit 2
+    fi
+elif [ -f "$NAME.theme" ]; then
     +++ Found file $NAME.theme and reading settings. +++
     if valid_theme_syntax $NAME.theme; then
         HERE=$(dirname "$NAME.theme")
@@ -152,22 +168,117 @@ elif [ -f "style.theme" ]; then
         exit 1
     fi
 else
-    +++ Generating a template theme file \"$NAME.theme\" +++
+    +++ Generating a template theme in directory \"$NAME.theme\" +++
+    mkdir -p "$NAME.theme"
+    themefile="$NAME.theme/style.theme"
     if [ -z "$THEMETEX" ]; then
-        if ! [ -f "$NAME.theme.tex" ]; then
-            THEMETEX="$NAME.theme.tex"
+        if ! [ -f "$NAME.theme/style.theme.tex" ]; then
+            THEMETEX="$NAME.theme/style.theme.tex"
             echo "% THEMETEX file for $NAME.md" > "$THEMETEX"
             echo "% additional preamble latex code can be put in this file" >> "$THEMETEX"
             echo "\renewcommand{\sectionname}{%THEMETEX_SECTIONNAME} % sets the name to use for sections in section slides to the variable specified in $NAME.theme" >> "$THEMETEX"
             THEMETEX_SECTIONNAME="Part"
         fi
     fi
-    cat > "$NAME.theme" <<-EOF
-	# Theme file for $NAME.md
+    base64 -d > $NAME.theme/logo.png <<EOF
+iVBORw0KGgoAAAANSUhEUgAAASsAAAGyCAMAAACLExINAAAAw3pUWHRSYXcgcHJvZmlsZSB0eXBl
+IGV4aWYAAHjabVBbDsMgDPvPKXaEvErDcWDtpN1gx18gqTS2WcJxE+GawPl6PuA2wKSg226lloIO
+rVq5uTAMtMmEOnmCeypa+9A55ajiVWJgJSpd/bxwVWqutg8ju+egr4OqmcC+jDiKjERDH2lU00g4
+BpQGLZ6Fpdr++YR+4gqLA4PU1tg/37tv79j8P8J8Cgk6i1gEkHEUpPmAnFE8lKviWsVmh9LMF/Jv
+TxfgDW3wWXOdOoBLAAABfmlDQ1BJQ0MgcHJvZmlsZQAAeJx9kTtIA0EURc9ulIhGLIwgYrFFtDIi
+KmKpUQiCQogRErVwP+YD2U3YTbCxFGwFCz+NUQsba20tbAVB8ANibWGlaCNhZZJAghhfM4c77z7m
+3QG5lNVNp2UKTKtgR8MhJZ5YVryvdOChh2FGVN3JT0ci8zStr3skcd4FxazmfX9Wp7Hu6CApwJSe
+twsgrQETG4W84H3Ar6dVA6RzYMiOJ5ZBehS6VuU3wakKy2Km345FZ0D2A0qqgbUG1tO2CfI4EDBM
+ywA5XmVD8KZgM1vUa+8UG/rWraVFoQP9hJljgQgKGkUyZCkQJIOFgkOUMKEm/r6KP0IRjSwZdBRm
+yWGiVvyIP/idrZMcG61O8oWg9cV1PwbAuwvlHdf9Pnbd8gl4nuHKqvtzJZj8BM9OXQscQdcWXFzX
+NW0PLreh9ymv2mpF8gByMgnvZ9CZgO5baF+p5la75/QBYpswfwMHhzCYgq7VJnu3Neb2b08tvx/f
+wnLStvNDVwAADXhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/
+IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+Cjx4OnhtcG1ldGEgeG1sbnM6eD0iYWRv
+YmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDQuNC4wLUV4aXYyIj4KIDxyZGY6UkRGIHht
+bG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAg
+PHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMu
+YWRvYmUuY29tL3hhcC8xLjAvbW0vIgogICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5j
+b20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgIHhtbG5zOmRjPSJodHRwOi8vcHVy
+bC5vcmcvZGMvZWxlbWVudHMvMS4xLyIKICAgIHhtbG5zOkdJTVA9Imh0dHA6Ly93d3cuZ2ltcC5v
+cmcveG1wLyIKICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIgog
+ICAgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIgogICB4bXBNTTpEb2N1
+bWVudElEPSJnaW1wOmRvY2lkOmdpbXA6YmNmZGJhNjAtZTk1Ny00NTA3LTk3MGEtMzgyY2Y1MDJj
+NzA1IgogICB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOmJlNjc0NjdhLWI1ZjItNDc1My05ZTIz
+LTg2YTFlNzcyYWRkNiIKICAgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOjk2ZTRi
+NGUwLTgwMTQtNDFkNS04ZTIxLWY1ZjM5YjY1N2IyMSIKICAgZGM6Rm9ybWF0PSJpbWFnZS9wbmci
+CiAgIEdJTVA6QVBJPSIyLjAiCiAgIEdJTVA6UGxhdGZvcm09IkxpbnV4IgogICBHSU1QOlRpbWVT
+dGFtcD0iMTczMDY3MDQ4MTE5MTgyNCIKICAgR0lNUDpWZXJzaW9uPSIyLjEwLjM4IgogICB0aWZm
+Ok9yaWVudGF0aW9uPSIxIgogICB4bXA6Q3JlYXRvclRvb2w9IkdJTVAgMi4xMCIKICAgeG1wOk1l
+dGFkYXRhRGF0ZT0iMjAyNDoxMTowM1QxNjo0ODowMS0wNTowMCIKICAgeG1wOk1vZGlmeURhdGU9
+IjIwMjQ6MTE6MDNUMTY6NDg6MDEtMDU6MDAiPgogICA8eG1wTU06SGlzdG9yeT4KICAgIDxyZGY6
+U2VxPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6
+Y2hhbmdlZD0iLyIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDpkN2ViY2E3YS1kZjY3
+LTRjNTUtOTAxZC0wNTQzNmJhNGY4NGQiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkdpbXAg
+Mi4xMCAoTGludXgpIgogICAgICBzdEV2dDp3aGVuPSIyMDI0LTExLTAzVDE2OjQ4OjAxLTA1OjAw
+Ii8+CiAgICA8L3JkZjpTZXE+CiAgIDwveG1wTU06SGlzdG9yeT4KICA8L3JkZjpEZXNjcmlwdGlv
+bj4KIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAog
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAg
+ICAgICAgICAgICAgICAgICAgICAgICAKPD94cGFja2V0IGVuZD0idyI/PqOrGx8AAAA2UExURXMu
+bQAAAAAALwAAXwAAjyYAJjoAOk4ATv///3FxcXUAdSxEVBsbG6qqqrAAsIfP/1RUVA4WG641O9YA
+AAABdFJOUwBA5thmAAAAAWJLR0QAiAUdSAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+gL
+AxUwAeEKyk4AAAOeSURBVHja7dxBjhRBFEPBLmYADUxBc//LskIIsXHmLyFRjneEkNd+PCSppedx
++57nJVLnUdGJKl8WqjxU/86qiOq4jOrTPft4mdVvqi/fbtnny3bVRXWgiqkOVDHVgSqg+jC0KqJ6
+GVo1Ub3OrKqoZlZdVCOrMqqJVRvVwKqOat+qj2rbqpBq16qRatOqkmrPqpNqy6qUaseqlWrDqpZq
+3aqXatmqmGrVqplq0aqaas2qm2rJqpxqxaqdasGqniq3QhVboYqtUMVWqGIrVLEVqtgKVWyFKrZC
+FVuhiq1QxVaoYitUsRWq2ApVbIUqtkIVW6GKrVDFVqhiK1SxFarYClVshSq2QhVbvfV8B6xS/WWF
+KrZ6omJ1AVWr1Q5Vq9XrdVZfb9uPy62+3zZWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFix
+YsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWK
+FStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStW
+rFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFix
+YsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWK
+FStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStW
+rFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFixYsWKFStWrFix
+YsWKFStWrFixYsWK1djq5WC1SMUqp3qySqmOk9UyFaucilVOxSqnYpVTscqpWOVUrHIqVjkVq5yK
+VU7FKqdilVOxyqlY5VSscipWORWrnIpVTsUqp2KVU7HKqVjlVKxyqnqrBap2qxWqcqslqm6rNapq
+q0WqZqtVqmKrZapeq3WqWqsNqlarHapSqy2qTqs9qkqrTapGq12qQqttqj6rfao6qwFVm9WEqsxq
+RNVlNaOqshpSNVlNqYqsxlQ9VnOqGqsLqGqsLqCqsxpQtVlNqMqsRlRdVjOqX1YVDamarKZURVZj
+qh6rOdXjRGVYf/b2uKTzefPe398fkv7zfgJF9rNf0yeL2wAAAABJRU5ErkJggg==
+EOF
+    cat > "$themefile" <<-EOF
+	# Theme file for mds
 	# note: no spaces around the equal sign allowed!
 	HIGHLIGHT=$HIGHLIGHT
 	ASPECTRATIO=$ASPECTRATIO
-	LOGO="$LOGO"
+	LOGO="\$HERE/logo.png"
 	LOGOHEIGHT=$LOGOHEIGHT
 	LOGOWIDTH="$LOGOWIDTH"
 	LOGOUP="$LOGOUP"
@@ -178,7 +289,7 @@ else
 	INNERTHEME=$INNERTHEME
 	FONTTHEME=$FONTTHEME
 	COLORTHEME=$COLORTHEME
-	THEMETEX="$HERE/$THEMETEX"
+	THEMETEX="\$HERE/style.theme.tex"
 	THEMETEX_SECTIONNAME="Part"
 	ENGINE=$ENGINE
 EOF
@@ -665,6 +776,9 @@ rm -f ${NAME}.nav ${NAME}.snm ${NAME}.vrb ${NAME}.lot ${NAME}.toc ${NAME}.aux ${
 
 if ! "$PRESERVELATEX"; then
     +++ Remove latex source too +++
-    rm -f "${NAME}.tex" "$realthemetex"
+    rm -f "${NAME}.tex"
+    if [ -f "${realthemetex:-}" ] ; then
+        rm -f "$realthemetex"
+    fi
 fi
 

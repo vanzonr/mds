@@ -1,0 +1,12 @@
+HIGHLIGHT=zenburn
+ASPECTRATIO=169
+FONTSIZE=10pt
+THEME=Madrid
+INNERTHEME=rectangles
+FONTTHEME=structurebold
+FONTFAMILY=Georgia
+COLORTHEME=orchid
+THEMETEX=$HERE/style.tex
+LOGO=$HERE/images/scinetlogo.png
+LOGOHEIGHT=0.15
+LOGOUP=-0.03
