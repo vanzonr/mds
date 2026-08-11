@@ -1,0 +1,28 @@
+\definecolor{alertcolor}{rgb}{%THEMETEX_ALERTCOLOR}
+\definecolor{YellowCorrectedGray}{rgb}{0.23,0.23,0.2}
+\definecolor{headercolor}{rgb}{%THEMETEX_HEADERCOLOR}
+\definecolor{blackcolor}{rgb}{0.05,0.05,0.05}
+\definecolor{whitecolor}{rgb}{0.95,0.95,0.95} 
+\setbeamercolor{normal text}{fg=blackcolor,bg=whitecolor}
+\setbeamercolor{structure}{fg=blackcolor}
+\setbeamercolor{alerted text}{fg=alertcolor}
+\setbeamercolor{item projected}{use=item,fg=whitecolor,bg=item.fg!35}
+\setbeamercolor*{palette primary}{use=structure,fg=structure.fg}
+\setbeamercolor*{palette secondary}{use=structure,fg=structure.fg!95!whitecolor}
+\setbeamercolor*{palette tertiary}{use=structure,fg=structure.fg!90!whitecolor}
+\setbeamercolor*{palette quaternary}{use=structure,fg=structure.fg!95!whitecolor,bg=whitecolor!80}
+\setbeamercolor*{framesubtitle}{fg=blackcolor}
+\setbeamercolor*{frametitle}{fg=headercolor}
+\setbeamercolor*{part title}{fg=headercolor}
+\setbeamercolor*{section title}{fg=headercolor}
+\setbeamercolor*{block title}{parent=structure,fg=white,bg=YellowCorrectedGray!80}
+\setbeamercolor*{block body}{fg=white,bg=YellowCorrectedGray}
+\setbeamertemplate{frametitle}{\vspace{5pt}\LARGE\bf\insertframetitle}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+\usepackage{makecmds}
+\provideenvironment{Shaded}{\begin{snugshade}\footnotesize}{\end{snugshade}}
+\renewenvironment{Shaded}{\begin{snugshade}\footnotesize}{\end{snugshade}}
+\setbeamertemplate{section page}{\ \par\begin{beamercolorbox}[center]{part title}\usebeamerfont{section title}\insertsection\end{beamercolorbox}}
+\setbeamerfont{section title}{size=\LARGE,series=\bfseries}
+
+

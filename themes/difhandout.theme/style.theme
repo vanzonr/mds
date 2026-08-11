@@ -1,0 +1,27 @@
+Red=1.0,0.0,0.0
+SkyBlue1=0.53,0.81,1.0
+DeepSkyBlue3=0.0,0.6,0.81
+ASPECTRATIO=169
+FONTSIZE=10pt
+THEME=Boadilla
+INNERTHEME=rounded
+FONTTHEME=structurebold
+COLORTHEME=orchid
+if [ $HANDOUT = false ]
+then
+    HIGHLIGHT=zenburn
+    LOGO=$HERE/images/scinetlogodark.png
+    LOGOHEIGHT=0.15
+    LOGOUP=-0.03
+    THEMETEX=$HERE/style.theme.tex
+    THEMETEX_ALERTCOLOR=$DeepSkyBlue3
+    THEMETEX_HEADERCOLOR=$SkyBlue1
+else
+    HIGHLIGHT=kate
+    LOGO=$HERE/images/scinetlogo.png
+    LOGOHEIGHT=0.12
+    LOGOUP=-0.03
+    THEMETEX=$HERE/style_handout.theme.tex
+    THEMETEX_ALERTCOLOR=$Red
+    THEMETEX_HEADERCOLOR=$SkyBlue1
+fi
