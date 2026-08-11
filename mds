@@ -457,6 +457,11 @@ if [ -n "$themetexvariables" ]; then
         CATSUB=$(find . -maxdepth 4 -name catsub -type f -executable)
     fi
     if ! [ -f "${CATSUB}" ]; then
+        curl https://raw.githubusercontent.com/vanzonr/catsub/refs/heads/master/catsub -o catsub
+        chmod +x catsub
+        CATSUB=$(find . -maxdepth 4 -name catsub -type f -executable)
+    fi
+    if ! [ -f "${CATSUB}" ]; then
         echo "ERROR: catsub utility required but not found" 1>&2
         exit 3
     fi
