@@ -135,10 +135,11 @@ following extensions are implemented in `mds`:
 Themes
 ======
 
-For customization of the theme of the slides, `mds` looks for a file
+For customization of the theme of the slides, `mds` looks for a directory
 in the same directory as the markdown file, and with the same name
 except with the extension .theme instead of .md . It can contain
-assignments of the form SETTING=VALUE. The possible SETTINGs are:
+a file style.theme with assignments of the form SETTING=VALUE.
+The possible SETTINGs are:
 
 | Option      |  Default value |  Meaning                                                      
 |-------------|----------------|-----------------------------------------------------------
@@ -158,7 +159,10 @@ assignments of the form SETTING=VALUE. The possible SETTINGs are:
 | COLORTHEME  |  orchid        |  Beamer 'color' theme to use
 | HANDOUT     |  false         |  When set to true, omits overlays (e.g. ". . ." pauses)
 | ENGINE      |  pdflatex      |  Program to use to generate the pdf from the LaTeX intermediate
-| THEMETEX    |  style.tex     |  Additional latex to add in the LaTeX preamble
+| THEMETEX    | style.theme.tex |  Additional latex to add in the LaTeX preamble
+
+You can use the variable $HERE in this .theme file to refer to the directory of the .theme file; this way, you can e.g. use images in this theme directory.
+
 
 
 Reporting Bugs
@@ -166,4 +170,4 @@ Reporting Bugs
 
 vanzonr@gmail.com. No promisses as to whether I will have time/can fix them.
 
-- 30 October 2024
+- 11 August 2026
