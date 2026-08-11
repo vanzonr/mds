@@ -8,8 +8,7 @@ text formats to other formats (see https://pandoc.org), while
 `pdflatex` is the pdf version of the document preparation system LaTeX
 (see e.g. https://www.tug.org/texlive).
 
-It also uses the substitution utility `catsub`, which is included as a
-git submodule.
+It also uses the substitution utility `catsub`, which is downloads if not present.
 
 mds is written in bash.
 
