@@ -13,7 +13,7 @@ then
     LOGO=$HERE/images/scinetlogodark.png
     LOGOHEIGHT=0.15
     LOGOUP=-0.03
-    THEMETEX=$HERE/style.theme.tex
+    THEMETEX=$HERE/preamble.theme.tex
     THEMETEX_ALERTCOLOR=$DeepSkyBlue3
     THEMETEX_HEADERCOLOR=$SkyBlue1
 else
@@ -21,7 +21,7 @@ else
     LOGO=$HERE/images/scinetlogo.png
     LOGOHEIGHT=0.12
     LOGOUP=-0.03
-    THEMETEX=$HERE/style_handout.theme.tex
+    THEMETEX=$HERE/handout_preamble.theme.tex
     THEMETEX_ALERTCOLOR=$Red
     THEMETEX_HEADERCOLOR=$SkyBlue1
 fi

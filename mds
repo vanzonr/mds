@@ -27,7 +27,7 @@ MARKDOWNFILE can use extended pandoc markdown syntax.
 
 If no MARKDOWNFILE.theme directory exists, one is created, and
 populated with an example theme consisting of three files:
-style.theme, style.theme.tex, and logo.png.
+settings.theme.sh, preamble.theme.tex, and logo.png. 
 These files can be edited to change the look of the slides.
 
 EOF
@@ -135,15 +135,15 @@ if [ -f style.tex ]; then THEMETEX=style.tex ; else THEMETEX=""; fi
 ENGINE=pdflatex
 
 
-+++ Override theme settings if NAME.theme exists. +++
++++ Override theme settings if NAME.theme directory exists. +++
 
 if [ -d "$NAME.theme" ]; then
     +++ Found directory $NAME.theme and looking for settings. +++
-    themefile=$(find "$NAME.theme/" -type f -name '*.theme' | head -n 1)
+    themefile=$(find "$NAME.theme/" -type f -name '*.theme.sh' | head -n 1)
     if [ -f "$themefile" ]; then
         +++ Found file $themefile and reading settings. +++
         if valid_theme_syntax $themefile; then
-            HERE=$(dirname "$themefile")
+            HERE=$(dirname "$themefile") # predefine this so $HERE can be used in the themefile
             source "$themefile"
         else
             exit 1
@@ -151,7 +151,7 @@ if [ -d "$NAME.theme" ]; then
     else
         exit 2
     fi
-elif [ -f "$NAME.theme" ]; then
+elif [ -f "$NAME.theme" ]; then # old method
     +++ Found file $NAME.theme and reading settings. +++
     if valid_theme_syntax $NAME.theme; then
         HERE=$(dirname "$NAME.theme")
@@ -159,7 +159,7 @@ elif [ -f "$NAME.theme" ]; then
     else
         exit 1
     fi
-elif [ -f "style.theme" ]; then
+elif [ -f "style.theme" ]; then # even older method
     +++ Found file $NAME.theme and reading settings. +++
     if valid_theme_syntax style.theme; then
         HERE=$(dirname "style.theme")
@@ -170,11 +170,11 @@ elif [ -f "style.theme" ]; then
 else
     +++ Generating a template theme in directory \"$NAME.theme\" +++
     mkdir -p "$NAME.theme"
-    themefile="$NAME.theme/style.theme"
+    themefile="$NAME.theme/settings.theme.sh"
     if [ -z "$THEMETEX" ]; then
-        if ! [ -f "$NAME.theme/style.theme.tex" ]; then
-            THEMETEX="$NAME.theme/style.theme.tex"
-            echo "% THEMETEX file for $NAME.md" > "$THEMETEX"
+        if ! [ -f "$NAME.theme/settings.theme.tex" ]; then
+            THEMETEX="$NAME.theme/settings.theme.tex"
+            echo "% THEMETEX file for mds" > "$THEMETEX"
             echo "% additional preamble latex code can be put in this file" >> "$THEMETEX"
             echo "\renewcommand{\sectionname}{%THEMETEX_SECTIONNAME} % sets the name to use for sections in section slides to the variable specified in $NAME.theme" >> "$THEMETEX"
             THEMETEX_SECTIONNAME="Part"
@@ -289,7 +289,7 @@ EOF
 	INNERTHEME=$INNERTHEME
 	FONTTHEME=$FONTTHEME
 	COLORTHEME=$COLORTHEME
-	THEMETEX="\$HERE/style.theme.tex"
+	THEMETEX="\$HERE/settings.theme.tex"
 	THEMETEX_SECTIONNAME="Part"
 	ENGINE=$ENGINE
 EOF

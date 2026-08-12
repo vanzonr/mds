@@ -13,6 +13,6 @@ THEME=Boadilla
 INNERTHEME=rounded
 FONTTHEME=structurebold
 COLORTHEME=orchid
-THEMETEX="$HERE/style.theme.tex"
+THEMETEX="$HERE/preamble.theme.tex"
 THEMETEX_SECTIONNAME="Part"
 ENGINE=pdflatex
