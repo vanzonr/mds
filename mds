@@ -11,24 +11,28 @@ mds converts a markdown file into PDF using pandoc and latex.
 
 Usage:
 
-  mds [OPTIONS] MARKDOWNFILE
+  mds [OPTIONS] MARKDOWNFILE.md
 
 OPTIONS:
-  -h    show this help
-  -q    pass through quarto for executable blocks
-  -d    work in draft mode; figures are included as outlines
-  -t    produce a handout version
-  -p    preserve the intermediate latex file that pandoc produces
-  -v    verbose mode
-  -vv   more verbosity
-  -vvv  more verbosity and show latex output
-  
-MARKDOWNFILE can use extended pandoc markdown syntax.
+  -h          show this help
+  -q          pass through quarto for executable blocks
+  -d          work in draft mode; figures are included as outlines
+  -t          produce a handout version
+  -p          preserve the intermediate latex file that pandoc produces
+  -v          verbose mode
+  -vv         more verbosity
+  -vvv        more verbosity and show latex output
+  -s STYLEDIR where to find the *.theme.sh file and other theme files
 
-If no MARKDOWNFILE.theme directory exists, one is created, and
-populated with an example theme consisting of three files:
+MARKDOWNFILE.md can use extended pandoc markdown syntax.
+
+If no STYLEDIR or MARKDOWNFILE.theme directory exists, one is created,
+and populated with an example theme consisting of three files:
 settings.theme.sh, preamble.theme.tex, and logo.png. 
 These files can be edited to change the look of the slides.
+
+Output is written to MARKDOWNFILE.pdf, or, in handout mode, to
+MARKDOWN_handout.pdf.
 
 EOF
 }
@@ -73,21 +77,18 @@ QUARTO=false
 HANDOUT=false
 VERBOSE=0
 PRESERVELATEX=false
-while getopts "vdqhtp" option; do
+while getopts "s:vdqhtp" option; do
     case $option in
         "v") let VERBOSE=VERBOSE+1; alias +++='echo +++'; echo -n "$parsingcomment"; parsingcomment="";;
         "d") DRAFT=true;;
         "q") QUARTO=true;;
         "t") HANDOUT=true;;
         "p") PRESERVELATEX=true;;
+        "s") STYLEDIR=${OPTARG};;
         "h") help; exit 0;;
     esac
 done
-# remove all option arguments, allowing -- as an end-of-options marker
-while [ $# != 0 ]; do
-    [ "${1:0:2}" = "--" ] && shift && break
-    [ "${1:0:1}" = "-" ] && shift || break
-done
+shift $((OPTIND - 1))
 
 +++ Checking for command line errors. +++
 
@@ -108,12 +109,20 @@ if (( $# > 1 )); then
     exit 1
 fi
 
++++ Check prerequisite utilities +++
+
 which pandoc >& /dev/null || module load pandoc || exit 1
 which xelatex >& /dev/null || module load texlive || exit 1
-
-+++ Determine markdown file base name and temporary file name +++ 
+if $QUARTO; then
+    if ! which quarto; then
+        exit 1
+    fi
+fi
+    
++++ Determine markdown file basename, style dir, and temporary file +++ 
 
 NAME=${1%.*}
+STYLEDIR=${STYLEDIR:-$NAME.theme}
 tempfile=$(mktemp --suffix .md)
 
 +++ Starting with default theme settings. +++
@@ -137,12 +146,12 @@ ENGINE=pdflatex
 
 +++ Override theme settings if NAME.theme directory exists. +++
 
-if [ -d "$NAME.theme" ]; then
+if [ -d "$STYLEDIR" ]; then
     +++ Found directory $NAME.theme and looking for settings. +++
-    themefile=$(find "$NAME.theme/" -type f -name '*.theme.sh' | head -n 1)
+    themefile=$(find "$STYLEDIR/" -type f -name '*.theme.sh' | head -n 1)
     if [ -f "$themefile" ]; then
         +++ Found file $themefile and reading settings. +++
-        if valid_theme_syntax $themefile; then
+        if valid_theme_syntax "$themefile"; then
             HERE=$(dirname "$themefile") # predefine this so $HERE can be used in the themefile
             source "$themefile"
         else
@@ -151,16 +160,16 @@ if [ -d "$NAME.theme" ]; then
     else
         exit 2
     fi
-elif [ -f "$NAME.theme" ]; then # old method
-    +++ Found file $NAME.theme and reading settings. +++
-    if valid_theme_syntax $NAME.theme; then
-        HERE=$(dirname "$NAME.theme")
-        source "$NAME.theme"
+elif [ -f "$STYLEDIR" ]; then # old method
+    +++ Found file $STYLEDIR and reading settings. +++
+    if valid_theme_syntax "$STYLEDIR"; then
+        HERE=$(dirname "$STYLEDIR")
+        source "$STYLEDIR"
     else
         exit 1
     fi
 elif [ -f "style.theme" ]; then # even older method
-    +++ Found file $NAME.theme and reading settings. +++
+    +++ Found file style.theme and reading settings. +++
     if valid_theme_syntax style.theme; then
         HERE=$(dirname "style.theme")
         source "style.theme"
@@ -168,12 +177,12 @@ elif [ -f "style.theme" ]; then # even older method
         exit 1
     fi
 else
-    +++ Generating a template theme in directory \"$NAME.theme\" +++
-    mkdir -p "$NAME.theme"
-    themefile="$NAME.theme/settings.theme.sh"
+    +++ Generating a template theme in directory \"$STYLEDIR\" +++
+    mkdir -p "$STYLEDIR"
+    themefile="$STYLEDIR/settings.theme.sh"
     if [ -z "$THEMETEX" ]; then
-        if ! [ -f "$NAME.theme/settings.theme.tex" ]; then
-            THEMETEX="$NAME.theme/settings.theme.tex"
+        if ! [ -f "$STYLEDIR/settings.theme.tex" ]; then
+            THEMETEX="$STYLEDIR/settings.theme.tex"
             echo "% THEMETEX file for mds" > "$THEMETEX"
             echo "% additional preamble latex code can be put in this file" >> "$THEMETEX"
             echo "\renewcommand{\sectionname}{%THEMETEX_SECTIONNAME} % sets the name to use for sections in section slides to the variable specified in $NAME.theme" >> "$THEMETEX"
