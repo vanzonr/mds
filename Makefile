@@ -1,18 +1,21 @@
-# Example makefile for template.md
+# Example makefile
 
 MAKEFLAGS += -j2
-
-NAME=template
-MDS=./mds
-
+NAME = template
+MDS = ./mds
 
 all: $(NAME).pdf $(NAME)_handout.pdf
 
-$(NAME).pdf: $(NAME).md $(NAME).theme
+test:
+	./testall.sh
+
+$(NAME).pdf: $(NAME).md
 	$(MDS) -vv $<
 
-$(NAME)_handout.pdf: $(NAME).md $(NAME).theme
+$(NAME)_handout.pdf: $(NAME).md
 	$(MDS) -vvt $<
 
 clean:
 	$(RM) $(NAME).pdf $(NAME)_handout.pdf
+	$(RM) -r testallresults
+	if [ -f catsub ]; then $(RM) catsub; fi
