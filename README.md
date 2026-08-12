@@ -8,11 +8,13 @@ text formats to other formats (see https://pandoc.org), while
 `pdflatex` is the pdf version of the document preparation system LaTeX
 (see e.g. https://www.tug.org/texlive).
 
-For some themes, mds also uses the substitution utility `catsub`, which is downloads if not present.
+For some themes, mds also uses the substitution utility `catsub`,
+which is downloaded if not present.
 
-Quarto support is experimental and requires additionally quarto, r and knitr.
+Quarto support is experimental and requires additionally quarto, r and
+knitr.
 
-mds is written in bash.
+`mds`  is written in bash.
 
 Prerequisites
 =============
@@ -40,30 +42,30 @@ source.
 Usage of `mds`
 ==============
 
-  mds [OPTIONS] MARKDOWNFILE.md
+`mds [OPTIONS] MARKDOWNFILE.md`
 
 This converts the markdown file into pdf. MARKDOWNFILE.md can use
 extended pandoc markdown syntax (see below).
 
 OPTIONS:
 
-  * -h          show this help
-  * -q          pass through quarto for executable blocks
-  * -d          work in draft mode; figures are included as outlines
-  * -t          produce a handout version
-  * -p          preserve the intermediate latex file that pandoc produces
-  * -v          verbose mode
-  * -vv         more verbosity
-  * -vvv        more verbosity and show latex output
-  * -s STYLEDIR where to find the .theme.sh file and other theme files
+  * `-h`          show this help
+  * `-q`          pass through quarto for executable blocks
+  * `-d`          work in draft mode; figures are included as outlines
+  * `-t`          produce a handout version
+  * `-p`          preserve the intermediate latex file that pandoc produces
+  * `-v`          verbose mode
+  * `-vv`         more verbosity
+  * `-vvv`        more verbosity and show latex output
+  * `-s STYLEDIR` where to find the .theme.sh file and other theme files
 
-If no STYLEDIR or MARKDOWNFILE.theme directory exists, one is created,
+If no `STYLEDIR` or `MARKDOWNFILE.theme` directory exists, one is created,
 and populated with an example theme consisting of three files:
-settings.theme.sh, preamble.theme.tex, and logo.png.  These files can
+`settings.theme.sh`, `preamble.theme.tex`, and `logo.png`.  These files can
 be edited to change the look of the slides.
 
-The resulting pdf is stored in MARKDOWFILE.pdf or in
-MARKDOWNFILE_handout in handout mode.
+The resulting pdf is stored in `MARKDOWNFILE.pdf` or in
+`MARKDOWNFILE_handout` in handout mode.
 
 Extended Markdown Syntax
 =========================
