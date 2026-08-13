@@ -123,16 +123,16 @@ fi
 
 NAME=${1%.*}
 STYLEDIR=${STYLEDIR:-$NAME.theme}
-tempfile=$(mktemp --suffix .md)
 
+tempfile=$(mktemp --suffix .md)
 _INTERMEDIATEFILES=("$tempfile")
+
 function cleanup()
 {
-    for filename in $_INTERMEDIATEFILE; do
+    for filename in $_INTERMEDIATEFILES; do
         \rm -f "$filename"
     done
     if [ "${NAME:-}" ]; then
-        rm -f "${NAME}.nav" "${NAME}.snm" "${NAME}.vrb" "${NAME}.lot" "${NAME}.toc" "${NAME}.aux" "${NAME}.aux.bak" "${NAME}.log" "${NAME}.out" "${NAME}.bbl" "${NAME}.end" "${NAME}.blg" "${NAME}.stdout" "${NAME}.xdv"
         if ! "$PRESERVELATEX"; then
             +++ Remove latex source too +++
             rm -f "${NAME}.tex"
@@ -545,6 +545,7 @@ fi
 function replacecolumns()
 {
     local tempfile=$(mktemp)
+    _INTERMEDIATEFILES+=("$tempfile")
     local colcount=0
     local firstcolwidth=0
     local blockstart=":::::::{.block}"
@@ -734,8 +735,6 @@ if $QUARTO; then
     which quarto >& /dev/null || module load quarto || exit 2
     # Using knitr as an engine, which requires R and the R package knitr
     which R >& /dev/null || module load r-bundle-bioconductor || exit 2
-    #tempqmdfile="$(mktemp -p. tmp.XXXXXXXX.qmd)"
-    #tempqmdfile="${1//.qmd/-tmp}.qmd"
     tempqmdfile="${NAME}-tmp.qmd"
     \cp $tempfile $tempqmdfile
     /usr/bin/time quarto render $tempqmdfile --to beamer --quiet
@@ -803,6 +802,7 @@ else
     QUARTOQUIET=''
 fi
 
+_INTERMEDIATEFILES+=("${NAME}.nav" "${NAME}.snm" "${NAME}.vrb" "${NAME}.lot" "${NAME}.toc" "${NAME}.aux" "${NAME}.aux.bak" "${NAME}.log" "${NAME}.out" "${NAME}.bbl" "${NAME}.end" "${NAME}.blg" "${NAME}.stdout" "${NAME}.xdv")
 if $DRAFT; then
     +++ Update $NAME.tex for a DRAFT version +++
     sed -i \
