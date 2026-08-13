@@ -7,6 +7,9 @@ MDS = ./mds
 all: $(NAME).pdf $(NAME)_handout.pdf
 
 test:
+	./testall.sh quick
+
+testall:
 	./testall.sh
 
 $(NAME).pdf: $(NAME).md

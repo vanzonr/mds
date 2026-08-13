@@ -129,7 +129,8 @@ _INTERMEDIATEFILES=("$tempfile")
 
 function cleanup()
 {
-    for filename in $_INTERMEDIATEFILES; do
+    +++ Get rid off intermediates but leave latex source in case you want to tweak it +++
+    for filename in ${_INTERMEDIATEFILES[@]}; do
         \rm -f "$filename"
     done
     if [ "${NAME:-}" ]; then
@@ -142,7 +143,7 @@ function cleanup()
         fi
     fi   
 }
-trap cleanup INT TERM
+trap cleanup INT TERM EXIT
 
 +++ Starting with default theme settings. +++
 
@@ -309,7 +310,7 @@ EOF
 	LOGOHEIGHT=$LOGOHEIGHT
 	LOGOWIDTH="$LOGOWIDTH"
 	LOGOUP="$LOGOUP"
-	PLAINTITLE=$PLAINTITLE    # true or false
+	PLAINTITLE=false
 	FONTFAMILY="$FONTFAMILY"
 	FONTSIZE=$FONTSIZE
 	THEME=$THEME
@@ -803,6 +804,7 @@ else
 fi
 
 _INTERMEDIATEFILES+=("${NAME}.nav" "${NAME}.snm" "${NAME}.vrb" "${NAME}.lot" "${NAME}.toc" "${NAME}.aux" "${NAME}.aux.bak" "${NAME}.log" "${NAME}.out" "${NAME}.bbl" "${NAME}.end" "${NAME}.blg" "${NAME}.stdout" "${NAME}.xdv")
+
 if $DRAFT; then
     +++ Update $NAME.tex for a DRAFT version +++
     sed -i \
@@ -824,6 +826,5 @@ fi
 
 +++ ${NAME}.pdf created. +++
 
-+++ Get rid off intermediates but leave latex source in case you want to tweak it +++
 
-cleanup
+
