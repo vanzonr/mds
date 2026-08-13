@@ -125,6 +125,25 @@ NAME=${1%.*}
 STYLEDIR=${STYLEDIR:-$NAME.theme}
 tempfile=$(mktemp --suffix .md)
 
+_INTERMEDIATEFILES=("$tempfile")
+function cleanup()
+{
+    for filename in $_INTERMEDIATEFILE; do
+        \rm -f "$filename"
+    done
+    if [ "${NAME:-}" ]; then
+        rm -f "${NAME}.nav" "${NAME}.snm" "${NAME}.vrb" "${NAME}.lot" "${NAME}.toc" "${NAME}.aux" "${NAME}.aux.bak" "${NAME}.log" "${NAME}.out" "${NAME}.bbl" "${NAME}.end" "${NAME}.blg" "${NAME}.stdout" "${NAME}.xdv"
+        if ! "$PRESERVELATEX"; then
+            +++ Remove latex source too +++
+            rm -f "${NAME}.tex"
+            if [ -f "${realthemetex:-}" ] ; then
+                rm -f "$realthemetex"
+            fi
+        fi
+    fi   
+}
+trap cleanup INT TERM
+
 +++ Starting with default theme settings. +++
 
 HIGHLIGHT=zenburn
@@ -133,7 +152,6 @@ LOGO=""
 LOGOHEIGHT=0.1
 LOGOWIDTH=""
 LOGOUP=""
-PLAINTITLE=false
 FONTFAMILY=""
 FONTSIZE=9pt
 THEME=Boadilla
@@ -312,12 +330,15 @@ if [ "$FONTFAMILY" ]; then
 fi
 
 # map oldstyle LOGOONTITLE to the reverse in PLAINTITLE
-if [ -n "${LOGOONTITLE:-}" -a -z "${PLAINTTITLE:-}" ]; then
+if [ -n "${LOGOONTITLE:-}" -a -z "${PLAINTITLE:-}" ]; then
     if "$LOGOONTITLE"; then
         PLAINTITLE=false
     else
         PLAINTITLE=true
     fi
+fi
+if [ -z "${PLAINTITLE:-}" ]; then
+    PLAINTITLE=false
 fi
 
 +++ Find latex theme template settings +++
@@ -448,6 +469,14 @@ if [ "${THEMETEX:-}" ]; then
         exit 2
     fi
 fi
++++ Check ENGINE +++
+if [ "${ENGINE:-}" ]; then
+    validENGINES="/pdflatex/xelatex/"
+    if ! [[  $validENGINES =~ /${ENGINE}/ ]]; then
+        echo "ERROR: Invalid ENGINE '$ENGINE'. Valid choices are:${validENGINES//\// }" 1>&2
+        exit 1
+    fi
+fi
 
 if $HANDOUT; then
     +++ Append postfix because handout +++
@@ -459,19 +488,29 @@ fi
 if [ -n "$themetexvariables" ]; then
     +++ Finding catsub +++
     if which catsub >& /dev/null; then
-        CATSUB=`which catsub`
-    elif [ -f catsub ]; then
+        CATSUB=`which catsub` # trust this
+    elif [ -x catsub ]; then # check for a cached version of catsub
         CATSUB="./catsub"
-    else
-        CATSUB=$(find . -maxdepth 4 -name catsub -type f -executable)
+    elif ! [ -f catsub ]; then
+        version="1.0.0"
+        archive="catsub-$version.tar.gz"
+        url="https://github.com/vanzonr/catsub/archive/refs/tags/v$version.tar.gz"
+        sha256="f3821cf1e03788a260aa2aac5e8097ec0696bb1898cf1905f2108c8bc4d474c9"
+        wget "$url" --output-document="$archive"
+        if ! sha256sum --check <<<"$sha256 $archive"; then
+            echo "ERROR: catsub v$version download checksum failed" 1>&2
+            exit 3
+        fi
+        tar --strip-components=1 -xzf $archive catsub-$version/catsub
+        \rm -f catsub-$version.tar.gz 
+        CATSUB="./catsub"
     fi
-    if ! [ -f "${CATSUB}" ]; then
-        curl https://raw.githubusercontent.com/vanzonr/catsub/refs/heads/master/catsub -o catsub
-        chmod +x catsub
-        CATSUB=$(find . -maxdepth 4 -name catsub -type f -executable)
-    fi
-    if ! [ -f "${CATSUB}" ]; then
+    if ! [ -x "${CATSUB}" ]; then
         echo "ERROR: catsub utility required but not found" 1>&2
+        exit 3
+    fi
+    if ! sha256sum --check <<<"14ddf5f997ca7f77ecc1254ea7946f570b0b4dfac6c9d8c47b2054cfc7f089fd  ${CATSUB}"; then
+        echo "ERROR: catsub utility checksum FAILED" 1>&2
         exit 3
     fi
     +++ Replace THEMETEX variables +++
@@ -623,6 +662,7 @@ sed -i -e "s/^\([[:space:]]*\. \. \.\)$/\n\1\n/" "$tempfile"
 
 findheader=$(eval echo $(\grep -n -- '^---$' $tempfile))
 tempfile2=$(mktemp)
+_INTERMEDIATEFILES+=("$tempfile2")
 if [[ $findheader =~ ^1:---\  ]]; then
     headerlines=$(echo ${findheader:6} | awk -F: '{print $1}')
     let insertionpoint=headerlines-1
@@ -786,13 +826,4 @@ fi
 
 +++ Get rid off intermediates but leave latex source in case you want to tweak it +++
 
-rm -f ${NAME}.nav ${NAME}.snm ${NAME}.vrb ${NAME}.lot ${NAME}.toc ${NAME}.aux ${NAME}.aux.bak ${NAME}.log ${NAME}.out ${NAME}.bbl ${NAME}.end ${NAME}.blg ${NAME}.stdout ${NAME}.xdv "$tempfile"
-
-if ! "$PRESERVELATEX"; then
-    +++ Remove latex source too +++
-    rm -f "${NAME}.tex"
-    if [ -f "${realthemetex:-}" ] ; then
-        rm -f "$realthemetex"
-    fi
-fi
-
+cleanup
