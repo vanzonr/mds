@@ -8,9 +8,10 @@ find themes -mindepth 1 -maxdepth 1 -type d -print0 | while IFS= read -r -d '' i
     if [ "${1:-}" != quick ]; then
         ./mds -dv -s "$i" template.md
         ./mds -pdv -s "$i" template.md
+        ./mds -v -s "$i" template.md
         ./mds -dvt -s "$i" template.md
-        ./mds -vvv -s "$i" template.md
-        rm -f template.pdf
+        ./mds -vvvt -s "$i" template.md
+        rm -f template_handout.pdf
     fi
-    mv template_handout.pdf testallresults/$(basename $i)_handout.pdf
+    mv template.pdf testallresults/$(basename $i).pdf
 done

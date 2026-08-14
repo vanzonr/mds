@@ -1,0 +1,54 @@
+% Additional colors
+\definecolor{goldenrod}{rgb}{0.85,0.65,0.13}
+\definecolor{silver}{gray}{0.75}
+\definecolor{gray90}{gray}{0.9}
+\definecolor{gray15}{gray}{0.15}
+
+% Fit margins to the theme's logo
+\setbeamersize
+{
+    text margin left=1.25cm,
+    text margin right=1.4cm
+}
+
+% Title page
+\defbeamertemplate*{title page}{customized}[1][]
+{
+\begin{picture}(0,0)
+\put(-35.5,-153.5){\includegraphics[width=16cm,height=9cm]{%THEMETEX_HERE/firstslide.pdf}}
+\put(130,-68){\begin{minipage}{9cm}\begin{flushright}
+\titlefont\color{white}
+  \Large{\inserttitle}\par
+  \normalsize\insertauthor\par
+  \small\insertinstitute\par
+  \small\insertdate\par
+  \end{flushright}
+  \end{minipage}}
+\end{picture}
+}
+
+% Section pages
+\setbeamertemplate{section page}{
+\begin{picture}(0,0)
+\put(-36,-178){\includegraphics[width=16.16cm,height=9.09cm]{%THEMETEX_HERE/sectionslide.pdf}}
+\end{picture}
+\vspace{2cm}\\
+    \usebeamerfont{section title}\usebeamercolor[fg]{section title}\color{white}\titlefont\Huge\insertsection\textcolor{goldenrod}{.}
+}
+
+% Title on top of slides
+\newfontfamily\titlefont{Ubuntu Light}
+\setbeamertemplate{frametitle}{\ \\\vspace{10pt}\titlefont\Huge\color{gray15}\insertframetitle \textcolor{goldenrod}{.}}
+
+% Syntax-highlighted code blocks
+\usepackage{tcolorbox}
+\renewenvironment{Shaded}{\begin{tcolorbox}[left=0pt,right=0pt,top=0pt,bottom=0pt,colframe=gray90,colback=gray90,arc=0pt]\small}{\end{tcolorbox}}
+
+% Colors of third-level boxes
+\setbeamercolor{structure}{fg=black,bg=goldenrod} % itemize, enumerate, etc
+
+% Slide number at the bottom left
+\setbeamertemplate{footline}[text line]{%
+  \parbox{\linewidth}{\vspace*{-14pt}\hspace*{-4cm}\titlefont{\large\color{silver}\ \ \ \insertframenumber}\hfill}}
+\setbeamertemplate{navigation symbols}{}
+

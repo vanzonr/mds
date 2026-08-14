@@ -29,8 +29,6 @@ The theme settings are all in the file `template.theme`.
 
 # Another Section
 
----
-
 ## A Slide About Emphasis
 
 **Bold text**
