@@ -166,7 +166,7 @@ ENGINE=pdflatex
 +++ Override theme settings if NAME.theme directory exists. +++
 
 if [ -d "$STYLEDIR" ]; then
-    +++ Found directory $NAME.theme and looking for settings. +++
+    +++ Found directory $STYLEDIR and looking for settings. +++
     themefile=$(find "$STYLEDIR/" -type f -name '*.theme.sh' | head -n 1)
     if [ -f "$themefile" ]; then
         +++ Found file $themefile and reading settings. +++
@@ -177,6 +177,7 @@ if [ -d "$STYLEDIR" ]; then
             exit 1
         fi
     else
+        echo "ERROR: Could not find '*.theme.sh' in $STYLEDIR." 1>&2
         exit 2
     fi
 elif [ -f "$STYLEDIR" ]; then # old method
@@ -752,18 +753,22 @@ fi
 
 NAME=${NAME}${POSTFIX}
 
-pandoc -t beamer -s ${SLIDELEVEL:-} --highlight-style=$HIGHLIGHT --wrap=none "$tempfile" -o ${NAME}.tex
+pandoc -t beamer -s ${SLIDELEVEL:-} --highlight-style=$HIGHLIGHT --wrap=none "$tempfile" -o "${NAME}.tex"
 
 if $PLAINTITLE; then
     +++ Removing logo from the title slide +++
-    sed -i -e 's/\\frame{\\titlepage}/\\frame[plain]{\\titlepage}/' ${NAME}.tex
+    sed -i -e 's/\\frame{\\titlepage}/\\frame[plain]{\\titlepage}/' "${NAME}.tex"
 fi
 
-+++ remove outline numbering if present +++
++++ Remove outline numbering if present +++
 
-sed -i -e 's/\[allowframebreaks\]/\[noframenumbering\]/' ${NAME}.tex
+sed -i -e 's/\[allowframebreaks\]/\[noframenumbering\]/' "${NAME}.tex"
 
-+++ ${NAME}.tex created. +++
++++ Correct the width of columns environments +++
+
+sed -i -e 's+\\begin{columns}\[T\]+\\begin{columns}[T,totalwidth=\\linewidth]+' "${NAME}.tex"
+
++++ "${NAME}.tex" created. +++
 
 if $HANDOUT; then
     +++ Making handout version. +++

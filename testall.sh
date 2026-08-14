@@ -10,7 +10,7 @@ find themes -mindepth 1 -maxdepth 1 -type d -print0 | while IFS= read -r -d '' i
         ./mds -pdv -s "$i" template.md
         ./mds -dvt -s "$i" template.md
         ./mds -vvv -s "$i" template.md
-        mv template.pdf testallresults/$(basename $i).pdf
+        rm -f template.pdf
     fi
     mv template_handout.pdf testallresults/$(basename $i)_handout.pdf
 done

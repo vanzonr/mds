@@ -27,8 +27,9 @@ This file, `template.md`, contains an example of how to use markdown to:
 . . .
 The theme settings are all in the file `template.theme`.
 
-
 # Another Section
+
+---
 
 ## A Slide About Emphasis
 
@@ -50,7 +51,6 @@ The theme settings are all in the file `template.theme`.
 > The quick brown fox jumped over the lazy dog.
 > The quick brown fox jumped over the lazy dog.
 > The quick brown fox jumped over the lazy dog.
-
 
 ## Another level 
 
