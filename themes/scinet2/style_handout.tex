@@ -1,0 +1,11 @@
+\usepackage{tcolorbox}
+\setbeamertemplate{frametitle}{\vspace{5pt}\LARGE\bf\insertframetitle}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+\usepackage{makecmds}
+\provideenvironment{snugshade}{\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt]}{\end{tcolorbox}}
+\provideenvironment{Shaded}{\begin{snugshade}\scriptsize}{\end{snugshade}}
+\renewenvironment{Shaded}{\begin{snugshade}\footnotesize}{\end{snugshade}}
+\definecolor{blackcolor}{rgb}{0.9,0.9,0.9} 
+\definecolor{whitecolor}{rgb}{0.1,0.1,0.1}
+\setbeamertemplate{section page}{\ \par\begin{beamercolorbox}[center]{part title}\usebeamerfont{section title}\insertsection\end{beamercolorbox}}
+\setbeamerfont{section title}{size=\LARGE,series=\bfseries}

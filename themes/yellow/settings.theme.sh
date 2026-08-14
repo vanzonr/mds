@@ -1,0 +1,11 @@
+HIGHLIGHT=pygments
+ASPECTRATIO=169
+FONTFAMILY="DejaVu Sans"
+FONTSIZE=11pt
+THEME=Boadilla
+INNERTHEME=rounded
+FONTTHEME=structurebold
+COLORTHEME=crane
+THEMETEX=$HERE/style.tex
+LOGO=$HERE/Alliance_logo_English.png
+LOGOHEIGHT=0.13

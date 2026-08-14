@@ -1,0 +1,12 @@
+HIGHLIGHT=pygments # was tango, but pandoc 2.11 changed that to use hard-to-read yellow
+ASPECTRATIO=43
+FONTFAMILY="DejaVu Serif"
+FONTSIZE=9pt
+THEME=Boadilla
+INNERTHEME=rounded
+FONTTHEME=structurebold
+COLORTHEME=seagull
+THEMETEX=$HERE/preamble.theme.tex
+LOGO=$HERE/SciNetLogoWhite.png
+LOGOHEIGHT=0.1
+LOGOONTITLE=false

@@ -1,0 +1,29 @@
+% adjust style of title on top of slides
+\setbeamertemplate{frametitle}{\vspace{5pt}\Huge\bf\insertframetitle}
+
+% adjust style of syntax-highlighted code blocks
+\usepackage{tcolorbox}
+\usepackage{makecmds}
+\definecolor{gray90}{gray}{0.9}
+\provideenvironment{snugshade}{}{}
+\renewenvironment{snugshade}{\begin{tcolorbox}[left=0pt,right=0pt,top=0pt,bottom=0pt,colframe=gray90,colback=gray90,arc=0pt]}{\end{tcolorbox}}
+\provideenvironment{Shaded}{}{}
+\renewenvironment{Shaded}{\begin{snugshade}\small}{\end{snugshade}}
+
+% adjust style of verbatim (i.e., bare ``` ... ``` blocks without
+% syntax highlighting)
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\@verbatim}
+  {\verbatim@font}
+  {\verbatim@font\small}
+  {}{}
+\makeatother
+
+% adjust style of section pages
+\setbeamertemplate{section page}{
+    \begin{center}
+    \usebeamerfont{section title}\usebeamercolor[fg]{section title}\Huge
+    \insertsection
+    \end{center}
+}

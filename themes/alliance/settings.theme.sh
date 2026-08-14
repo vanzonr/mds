@@ -1,0 +1,14 @@
+HIGHLIGHT=pygments
+ASPECTRATIO=169
+FONTSIZE=10pt
+FONTFAMILY=Montserrat
+FONTTHEME=structurebold
+THEME=default
+COLORTHEME=default
+THEMETEX=$HERE/preamble.theme.tex
+THEMETEX_TITLEBACKGROUND=$HERE/titlebackground.pdf
+LOGO=$HERE/background.pdf
+LOGOHEIGHT=1.02
+LOGOWIDTH=1.45
+PLAINTITLE=true
+INNERTHEME=rectangles

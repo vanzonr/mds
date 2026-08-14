@@ -1,0 +1,50 @@
+\definecolor{Cyan}{rgb}{0.0,0.67,0.93}
+\definecolor{Blue}{rgb}{0.35,0.5,0.99}
+\definecolor{Green}{rgb}{0.3,0.93,0.3}
+\definecolor{DarkRed}{rgb}{0.52,0.4,0.4}
+\definecolor{Red}{rgb}{0.92,0.4,0.4} 
+\definecolor{blackcolor}{rgb}{0.15,0.15,0.15}
+\definecolor{whitecolor}{rgb}{0.9,0.9,0.9} 
+\setbeamercolor{normal text}{fg=whitecolor,bg=blackcolor}
+\setbeamercolor{structure}{fg=whitecolor}
+\setbeamercolor{alerted text}{fg=cyan!90!blackcolor}
+\setbeamercolor{item projected}{use=item,fg=blackcolor,bg=item.fg!35}
+\setbeamercolor*{palette primary}{use=structure,fg=structure.fg}
+\setbeamercolor*{palette secondary}{use=structure,fg=structure.fg!95!blackcolor}
+\setbeamercolor*{palette tertiary}{use=structure,fg=structure.fg!90!blackcolor}
+\setbeamercolor*{palette quaternary}{use=structure,fg=structure.fg!95!blackcolor,bg=blackcolor!80}
+\setbeamercolor*{framesubtitle}{fg=whitecolor}
+\setbeamercolor*{frametitle}{fg=cyan}
+\setbeamercolor*{part title}{fg=Cyan}
+\setbeamercolor*{block title}{parent=structure,bg=blackcolor!60}
+\setbeamercolor*{block body}{fg=whitecolor,bg=blackcolor!80}
+\setbeamertemplate{frametitle}{\vspace{5pt}\LARGE\bf\insertframetitle}
+\newcommand{\mdsxoffset}{-250}
+\newcommand{\mdsyoffset}{-6}
+\newcommand{\mdslogofile}{%THEMETEX_HERE/SciNetLogoTransparent.png}
+%\logo{\begin{picture}(0,0)\put(\mdsxoffset,\mdsyoffset){\includegraphics[height=0.15\textheight]{\mdslogofile}}\end{picture}}
+\usepackage{makecmds}
+\provideenvironment{Shaded}{\begin{snugshade}\footnotesize}{\end{snugshade}}
+\renewenvironment{Shaded}{\begin{snugshade}\footnotesize}{\end{snugshade}}
+\definecolor{Gray2}{rgb}{.6,.6,.6}
+\definecolor{White2}{rgb}{.9,.9,.9}
+\setbeamercolor*{frametitle}{bg=Gray2,fg=White2}
+\setbeamertemplate{frametitle}{
+  \vspace{2mm}
+  \begin{beamercolorbox}[sep=0.28cm,ht=26pt,wd=\paperwidth]{frametitle}
+    \vbox{}\vskip-2ex%
+        \color{White2}\strut\LARGE\insertframetitle\strut
+        \hfill\raisebox{-0.8mm}{\href{http://www.scinethpc.ca}{\includegraphics[width=1.8cm]{\mdslogofile}}}
+        \vskip-0.8ex%
+    \end{beamercolorbox}
+}
+\setbeamercolor{section name}{fg=blackcolor}
+\renewcommand{\sectionname}{}
+\usefonttheme[onlymath]{serif}
+\boldmath
+
+\newcommand{\tobetyped}[1]{\colorbox{black}{\small\tt #1}}
+
+\newcommand{\blue}[1]{\textcolor{Blue}{#1}}
+\newcommand{\green}[1]{\textcolor{Green}{#1}}
+\newcommand{\red}[1]{\textcolor{Red}{#1}}

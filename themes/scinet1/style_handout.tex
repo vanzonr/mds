@@ -1,0 +1,24 @@
+\usepackage{tcolorbox}
+\setbeamertemplate{frametitle}{\vspace{5pt}\LARGE\bf\insertframetitle}
+\newcommand{\mdsxoffset}{-59}
+\newcommand{\mdsyoffset}{-6}
+\newcommand{\mdslogofile}{%THEMETEX_HERE/ScinetLogoWhite.png}
+\logo{\begin{picture}(0,0)\put(\mdsxoffset,\mdsyoffset){\includegraphics[height=0.08\textheight]{\mdslogofile}}\end{picture}}
+\usepackage{makecmds}
+\provideenvironment{snugshade}{\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt]}{\end{tcolorbox}}
+\provideenvironment{Shaded}{\begin{snugshade}\scriptsize}{\end{snugshade}}
+\definecolor{blackcolor}{rgb}{0.9,0.9,0.9} 
+\definecolor{whitecolor}{rgb}{0.1,0.1,0.1}
+\definecolor{DarkGreen}{rgb}{0.0,0.66,0.0}
+\definecolor{Cyan}{rgb}{0.0,0.67,0.93}
+\definecolor{Blue}{rgb}{0.35,0.5,0.99}
+\definecolor{Green}{rgb}{0.3,0.93,0.3}
+\definecolor{DarkRed}{rgb}{0.52,0.4,0.4}
+\definecolor{Red}{rgb}{0.92,0.4,0.4} 
+\definecolor{LightBlue}{rgb}{0.5,0.7,0.99}
+
+\newcommand{\tobetyped}[1]{\colorbox{LightBlue}{\small\tt #1}}
+
+\newcommand{\blue}[1]{\textcolor{Blue}{#1}}
+\newcommand{\green}[1]{\textcolor{Green}{#1}}
+\newcommand{\red}[1]{\textcolor{Red}{#1}}
