@@ -1,0 +1,7 @@
+This setting determines which file to use to add to the "LaTeX
+# preamble". Such a preamble allows a lot of tweaking of the
+# style. This file will be read by latex, but usually contains
+# parameters that can be set here in the theme file. Note the use of
+# $HERE/ which allows points to the same directory as this theme file.
+#
+# Default value: <empty>

@@ -1,0 +1,12 @@
+This setting tweaks the theme for titles, and sometimes for the text. 
+# By setting it to structurebold, you get bold titles with the font 
+# specified by FONTFAMILY, otherwise, set this to default.
+#
+# If the FONTFAMILY is set to default or not set, further options are
+# structureitalicserif (for a serif font in titles),
+# structuresmallcapsserif (for a small-caps font in titles), serif
+# (for a serif font throughout the slides), and sansserif (for a sans
+# serif font throughout the slides).
+#
+# Default value: structurebold
+

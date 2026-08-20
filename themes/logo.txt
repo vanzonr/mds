@@ -1,0 +1,9 @@
+This setting specifies the logo to put on every slide. You can
+# change the location and size with other settings, see below.
+#
+# The value must be an existing image file. You can use the "$HERE"
+# variable to point at files in the same directory as this
+# theme file. 
+#
+# Default value: <empty> (i.e. no logo)
+

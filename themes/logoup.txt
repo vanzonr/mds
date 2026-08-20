@@ -1,0 +1,9 @@
+This setting specifies how much the logo should be moved up from the
+# bottom, relative to the height of the slide. The logo always sits at
+# the bottom right, but can be moved up with this setting.
+#
+# Possible values are decimal number between 0 and 1
+# (although larger values than 1 may work to a certain extent).
+#
+# Default value: <empty>
+

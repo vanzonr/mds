@@ -1,6 +1,7 @@
-# This setting determines the size of the font of the regular text in
-# the slides; the font size of the titles will scale accordingly.
+This setting determines the highlight style for code blocks,
 #
-# Possible values: 8pt, 9pt, 10pt, 11pt, 12pt, 14pt, 17pt, 20pt
+# Possible values values may depend on the installed version of
+# pandoc, but typically are: pygments, tango, espresso, zenburn, kate,
+# monochrome, breezedark, haddock
 #
-# Default value: 9pt
+# Default value: zenburn

@@ -1,0 +1,7 @@
+This setting selects the overall beamer color theme of the slides.
+#
+# Possible values: albatross, beaver, beetle, crane, default, dolphin,
+# dove, fly, lily, orchid, rose, seagull, seahorse, sidebartab,
+# structure, whale, and wolverine
+#
+# Default value: default

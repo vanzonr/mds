@@ -1,0 +1,37 @@
+# %HEADERTXT
+## ------------------------------------------------------
+## This file contains the settings for the theme %THEME
+## ------------------------------------------------------
+
+# %HIGHLIGHTTXT
+HIGHLIGHT=zenburn
+
+# %ASPECTRATIOTXT
+ASPECTRATIO=169
+
+# %FONTSIZETXT
+FONTSIZE=9pt
+
+# %THEMETXT
+THEME=Boadilla
+
+# %INNERTHEMETXT
+INNERTHEME=rounded
+
+# %FONTTHEMETXT
+FONTTHEME=structurebold
+
+# %COLORTHEMETXT
+COLORTHEME=orchid
+
+# %THEMETEXTXT
+THEMETEX=$HERE/preamble.theme.tex
+
+# %LOGOTXT
+LOGO=$HERE/logos.png
+
+# %LOGOHEIGHTTXT
+LOGOHEIGHT=0.15
+
+# %LOGOUPTXT
+LOGOUP=-0.03

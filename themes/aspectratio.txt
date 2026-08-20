@@ -1,0 +1,6 @@
+This setting determines the relative width and height of the slides.
+#
+# Possible values are: 1610, 169, 149, 54, 43 or 32.
+#
+# Default value: 169, which means a width:height ratio of 16:9.
+

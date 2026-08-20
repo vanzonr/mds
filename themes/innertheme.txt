@@ -1,0 +1,11 @@
+This setting determines the 'inner theme' of the slides (from
+# beamer), e.g., what boxes and list bullets look like.
+#
+# Possible values: default, circles, rectangles, rounded, and inmargin.
+#
+# Default value: rounded
+#
+# Note: The inmargin value works best with default, Madrid, Antibes,
+# and Berkeley themes and presents issues with Hannover, Goettingen
+# and Marburg themes.
+

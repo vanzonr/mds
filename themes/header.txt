@@ -1,0 +1,19 @@
+---------------------------------------------------------------------
+# mds.theme
+#
+# This file describes the theme configuration settings to be used by
+# the markdown-to-slides utility mds.
+#
+# Syntax:
+#  - Lines containing "SETTING=VALUE" (i.e., bash-style assignment)
+#  - No spaces are allowed around the equal signs.
+#  - VALUEs containing space(s) should be surrounded by quotation marks.
+#  - Empty lines and comments starting with # are allowed.
+#  - Some bash constructs like "if [ A = B ]" might work.
+#
+# Lines starting with '#' are comments and otherwise ignored by mds.
+#
+# Any SETTING that start with THEMETEX_ relies on the implementation in
+# the file $THEMETEX (usually mds.tex).
+# ---------------------------------------------------------------------
+
