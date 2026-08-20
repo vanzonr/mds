@@ -81,6 +81,10 @@ Rarely seen.
     print(a)
     ```
 
+## Formulas
+
+$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+
 ## Pictures
 
 [[

@@ -22,13 +22,13 @@ OPTIONS:
   -v          verbose mode
   -vv         more verbosity
   -vvv        more verbosity and show latex output
-  -s STYLEDIR where to find the *.theme.sh file and other theme files
+  -s FILE|DIR where to find the *.theme file and other theme files
 
 MARKDOWNFILE.md can use extended pandoc markdown syntax.
 
 If no STYLEDIR or MARKDOWNFILE.theme directory exists, one is created,
 and populated with an example theme consisting of three files:
-settings.theme.sh, preamble.theme.tex, and logo.png. 
+mds.theme, mds.tex, and logo.png. 
 These files can be edited to change the look of the slides.
 
 Output is written to MARKDOWNFILE.pdf, or, in handout mode, to
@@ -159,17 +159,27 @@ THEME=Boadilla
 INNERTHEME=rounded
 FONTTHEME=structurebold
 COLORTHEME=orchid
-if [ -f style.tex ]; then THEMETEX=style.tex ; else THEMETEX=""; fi
+THEMETEX=""
 ENGINE=pdflatex
 
 
 +++ Override theme settings if NAME.theme directory exists. +++
 
-if [ -d "$STYLEDIR" ]; then
+if ! [ -e "{STYLEDIR:-}" ]; then
+    trythesestyledirs=("{NAME}.theme" "mds.theme" "style.theme")
+    for possiblestyledir in ${trythesestyledirs[@]}; do
+        if [[ -f "${possiblestyledir}" || -d "${possiblestyledir}" ]]; then
+            STYLEDIR="${possiblestyledir}"
+            break
+        fi
+    done
+fi
+
+if [ -d "$STYLEDIR" ]; then # prefered mode if having theme files in a separate dir
     +++ Found directory $STYLEDIR and looking for settings. +++
-    themefile=$(find "$STYLEDIR/" -type f -name '*.theme.sh' | head -n 1)
+    themefile=$(find "$STYLEDIR/" -type f -name '*.theme' | head -n 1)
     if [ -f "$themefile" ]; then
-        +++ Found file $themefile and reading settings. +++
+        +++ Found file \""$themefile"\" and reading settings. +++
         if valid_theme_syntax "$themefile"; then
             HERE=$(dirname "$themefile") # predefine this so $HERE can be used in the themefile
             source "$themefile"
@@ -177,10 +187,10 @@ if [ -d "$STYLEDIR" ]; then
             exit 1
         fi
     else
-        echo "ERROR: Could not find '*.theme.sh' in $STYLEDIR." 1>&2
+        echo "ERROR: Could not find '*theme' in $STYLEDIR." 1>&2
         exit 2
     fi
-elif [ -f "$STYLEDIR" ]; then # old method
+elif [ -f "$STYLEDIR" ]; then # but we accept the path to the theme file as well, then it does not need to have the .theme extension.
     +++ Found file $STYLEDIR and reading settings. +++
     if valid_theme_syntax "$STYLEDIR"; then
         HERE=$(dirname "$STYLEDIR")
@@ -188,28 +198,24 @@ elif [ -f "$STYLEDIR" ]; then # old method
     else
         exit 1
     fi
-elif [ -f "style.theme" ]; then # even older method
-    +++ Found file style.theme and reading settings. +++
-    if valid_theme_syntax style.theme; then
-        HERE=$(dirname "style.theme")
-        source "style.theme"
-    else
-        exit 1
-    fi
 else
+    if [ -z "${STYLEDIR:-}" ]; then
+        STYLEDIR=${NAME}.theme
+    fi
     +++ Generating a template theme in directory \"$STYLEDIR\" +++
     mkdir -p "$STYLEDIR"
-    themefile="$STYLEDIR/settings.theme.sh"
+    themefile="$STYLEDIR/mds.theme"
     if [ -z "$THEMETEX" ]; then
-        if ! [ -f "$STYLEDIR/settings.theme.tex" ]; then
-            THEMETEX="$STYLEDIR/settings.theme.tex"
-            echo "% THEMETEX file for mds" > "$THEMETEX"
-            echo "% additional preamble latex code can be put in this file" >> "$THEMETEX"
-            echo "\renewcommand{\sectionname}{%THEMETEX_SECTIONNAME} % sets the name to use for sections in section slides to the variable specified in $NAME.theme" >> "$THEMETEX"
+        if ! [ -f "$STYLEDIR/mds.tex" ]; then
+            THEMETEX="$STYLEDIR/mds.tex"
+            echo "% THEMETEX file for mds" > "${THEMETEX}"
+            echo "% additional preamble latex code can be put in this file" >> "${THEMETEX}"
+            echo "\renewcommand{\sectionname}{%THEMETEX_SECTIONNAME} % sets the name to use for sections in section slides to the variable specified in mds.theme" >> "${THEMETEX}"
             THEMETEX_SECTIONNAME="Part"
         fi
     fi
-    base64 -d > $NAME.theme/logo.png <<EOF
+    +++ Generating a logo to use +++
+    base64 -d > "${STYLEDIR}/logo.png" <<EOF
 iVBORw0KGgoAAAANSUhEUgAAASsAAAGyCAMAAACLExINAAAAw3pUWHRSYXcgcHJvZmlsZSB0eXBl
 IGV4aWYAAHjabVBbDsMgDPvPKXaEvErDcWDtpN1gx18gqTS2WcJxE+GawPl6PuA2wKSg226lloIO
 rVq5uTAMtMmEOnmCeypa+9A55ajiVWJgJSpd/bxwVWqutg8ju+egr4OqmcC+jDiKjERDH2lU00g4
@@ -302,6 +308,7 @@ q0WqZqtVqmKrZapeq3WqWqsNqlarHapSqy2qTqs9qkqrTapGq12qQqttqj6rfao6qwFVm9WEqsxq
 RNVlNaOqshpSNVlNqYqsxlQ9VnOqGqsLqGqsLqCqsxpQtVlNqMqsRlRdVjOqX1YVDamarKZURVZj
 qh6rOdXjRGVYf/b2uKTzefPe398fkv7zfgJF9rNf0yeL2wAAAABJRU5ErkJggg==
 EOF
+    +++ Generating a theme file "$themefile" +++
     cat > "$themefile" <<-EOF
 	# Theme file for mds
 	# note: no spaces around the equal sign allowed!
@@ -318,7 +325,7 @@ EOF
 	INNERTHEME=$INNERTHEME
 	FONTTHEME=$FONTTHEME
 	COLORTHEME=$COLORTHEME
-	THEMETEX="\$HERE/settings.theme.tex"
+	THEMETEX="\$HERE/mds.tex"
 	THEMETEX_SECTIONNAME="Part"
 	ENGINE=$ENGINE
 EOF
@@ -499,7 +506,7 @@ if [ -n "$themetexvariables" ]; then
         url="https://github.com/vanzonr/catsub/archive/refs/tags/v$version.tar.gz"
         sha256="f3821cf1e03788a260aa2aac5e8097ec0696bb1898cf1905f2108c8bc4d474c9"
         wget "$url" --output-document="$archive"
-        if ! sha256sum --check <<<"$sha256 $archive"; then
+        if ! sha256sum --check --quiet > /dev/null <<<"$sha256 $archive"; then
             echo "ERROR: catsub v$version download checksum failed" 1>&2
             exit 3
         fi
@@ -511,7 +518,7 @@ if [ -n "$themetexvariables" ]; then
         echo "ERROR: catsub utility required but not found" 1>&2
         exit 3
     fi
-    if ! sha256sum --check <<<"14ddf5f997ca7f77ecc1254ea7946f570b0b4dfac6c9d8c47b2054cfc7f089fd  ${CATSUB}"; then
+    if ! sha256sum --check --quiet <<<"14ddf5f997ca7f77ecc1254ea7946f570b0b4dfac6c9d8c47b2054cfc7f089fd  ${CATSUB}"; then
         echo "ERROR: catsub utility checksum FAILED" 1>&2
         exit 3
     fi
