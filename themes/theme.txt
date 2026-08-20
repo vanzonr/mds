@@ -1,10 +1,13 @@
 This setting selects the overall beamer theme of the slides.
 #
-# Possible values: Antibes, Bergen, Boadilla, boxes, default,
-# Goettingen, Hannover, Madrid, Marburg, Pittsburgh, Rochester,
-# AnnArbor, Berkeley, Berlin, CambridgeUS, Copenhagen, Darmstadt,
-# Dresden, Frankfurt, Ilmenau, JuanLesPins, Luebeck, Malmoe,
-# Montpellier, PaloAlto, Singapore, Szeged, and Warsaw.
+# Possible values for themes with numbered sections: AnnArbor,
+# Boadilla, CambridgeUS, Copenhagen, Darmstadt, Frankfurt, Ilmenau,
+# JuanLesPins, Madrid, PaloAlto, and Warsaw
+#
+# Possible values for themes with unnumbered sections: Antibes,
+# Bergen, Berkeley, Berlin, boxes, default, Dresden, Goettingen,
+# Hannover, Luebeck, Malmoe, Marburg, Montpellier, Pittsburgh,
+# Rochester, Singapore, and Szeged
 #
 # Default value: default
 

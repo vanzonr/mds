@@ -1,0 +1,10 @@
+This setting determines the font used for all text.
+# When left empty, uses standard LaTeX fonts, which can be further
+# tweaks with the FONTTHEME setting (see below).
+#
+# Possible values are the names of an installed TTF font. Fairly
+# commonly installed options are: Arial, Arial Black, Comic Sans MS,
+# Georgia, Impact, Times New Roman, Trebuchet MS, and Verdana
+#
+# Default value: empty
+

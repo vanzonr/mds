@@ -1,0 +1,7 @@
+This setting determines whether the logo should appear on the title
+# slide (i.e., the first slide).
+#
+# If the value is true, the logo will be removed from the first slide,
+# if it false, the logo will appear.
+#
+# Default value: false (i.e. logo appears on the title page)

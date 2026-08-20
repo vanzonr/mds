@@ -1,0 +1,35 @@
+# %HEADERTXT
+## This file contains the settings for the theme %THEME
+
+# %HIGHLIGHTTXT
+HIGHLIGHT=pygments
+
+# %ASPECTRATIOTXT
+ASPECTRATIO=169
+
+# %FONTFAMILYTXT
+FONTFAMILY="DejaVu Sans"
+
+# %FONTSIZETXT
+FONTSIZE=11pt
+
+# %THEMETXT
+THEME=Boadilla
+
+# %INNERTHEMETXT
+INNERTHEME=rounded
+
+# %FONTTHEMETXT
+FONTTHEME=structurebold
+
+# %COLORTHEMETXT
+COLORTHEME=crane
+
+# %THEMETEXTXT
+THEMETEX=$HERE/style.tex
+
+# %LOGOTXT
+LOGO=$HERE/Alliance_logo_English.png
+
+# %LOGOHEIGHT
+LOGOHEIGHT=0.13

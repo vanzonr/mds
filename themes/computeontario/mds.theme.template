@@ -1,0 +1,38 @@
+# %HEADERTXT
+## This file contains the settings for the theme %THEME
+
+# %HIGHLIGHTTXT
+HIGHLIGHT=zenburn
+
+# %ASPECTRATIOTXT
+ASPECTRATIO=169
+
+# %FONTSIZETXT
+FONTSIZE=10pt
+
+# %THEMETXT
+THEME=Madrid
+
+# %INNERTHEMETXT
+INNERTHEME=rectangles
+
+# %FONTTHEMETXT
+FONTTHEME=structurebold
+
+# %FONTFAMILYTXT
+FONTFAMILY=Georgia
+
+# %COLORTHEMETXT
+COLORTHEME=orchid
+
+# %THEMETEXTXT
+THEMETEX=$HERE/preamble.theme.tex
+
+# %LOGOTXT
+LOGO=$HERE/images/scinetlogo.png
+
+# %LOGOHEIGHTTXT
+LOGOHEIGHT=0.15
+
+# %LOGOUPTXT
+LOGOUP=-0.03

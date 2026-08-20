@@ -1,13 +1,14 @@
 # %HEADERTXT
-## ------------------------------------------------------
 ## This file contains the settings for the theme %THEME
-## ------------------------------------------------------
 
 # %HIGHLIGHTTXT
-HIGHLIGHT=zenburn
+HIGHLIGHT=pygments # was tango, but pandoc 2.11 changed that to use hard-to-read yellow
 
 # %ASPECTRATIOTXT
-ASPECTRATIO=169
+ASPECTRATIO=43
+
+# %FONTFAMILYTXT
+FONTFAMILY="DejaVu Serif"
 
 # %FONTSIZETXT
 FONTSIZE=9pt
@@ -22,16 +23,17 @@ INNERTHEME=rounded
 FONTTHEME=structurebold
 
 # %COLORTHEMETXT
-COLORTHEME=orchid
+COLORTHEME=seagull
 
 # %THEMETEXTXT
 THEMETEX=$HERE/preamble.theme.tex
 
 # %LOGOTXT
-LOGO=$HERE/logos.png
+LOGO=$HERE/SciNetLogoWhite.png
 
 # %LOGOHEIGHTTXT
-LOGOHEIGHT=0.15
+LOGOHEIGHT=0.1
 
-# %LOGOUPTXT
-LOGOUP=-0.03
+# %PLAINTITLETXT
+# LOGONTITLE=!PLAINTITLE
+LOGOONTITLE=false

@@ -1,0 +1,6 @@
+This setting specifies which LaTeX command to use to convert the
+# intermediate LaTeX to PDF.
+# Only really needed in case you want to force the use of xelatex.
+#
+# Default value: pdflatex, or xelatex if FONTFAMILY is set.
+

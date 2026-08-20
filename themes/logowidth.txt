@@ -1,0 +1,8 @@
+This setting specifies the width of the logo relative to the width
+# of the slide. Only either LOGOHEIGHT (see above) or LOGOWIDTH should
+# be set. The aspect ratio of the logo cannot be changed.
+#
+# Possible values are decimal number between 0 and 1
+# (although larger values than 1 may work to a certain extent).
+#
+# Default value: <empty>

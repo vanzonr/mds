@@ -1,0 +1,36 @@
+# %HEADERTXT
+## This file contains the settings for the theme %THEME
+
+# %ASPECTRATIOTXT
+ASPECTRATIO=169
+
+# %FONTSIZETXT
+FONTSIZE=10pt
+
+# %THEMETXT
+THEME=Boadilla
+
+# %INNERTHEMETXT
+INNERTHEME=rounded
+
+# %FONTTHEMETXT
+FONTTHEME=structurebold
+
+# %COLORTHEMETXT
+COLORTHEME=orchid
+
+if [ $HANDOUT = true ]
+then
+# %HIGHLIGHTTXT
+HIGHLIGHT=kate
+# %THEMETEXTXT
+THEMETEX=$HERE/style_handout.tex
+else
+# %HIGHLIGHTTXT
+HIGHLIGHT=zenburn
+# %THEMETEXTXT
+THEMETEX=$HERE/style.tex
+fi
+
+## This setting is for use in $THEMETEX
+THEMETEX_HERE=$HERE
