@@ -1,0 +1,20 @@
+# %HEADERTXT
+## This file contains the settings for the theme %THEME
+
+# %HIGHLIGHTTXT
+HIGHLIGHT=zenburn
+
+# %ASPECTRATIOTXT
+ASPECTRATIO=169
+
+# %FONTSIZETXT
+FONTSIZE=10pt
+
+# %THEMETXT
+THEME=Hannover
+
+# %COLORTHEMETXT
+COLORTHEME=albatross
+
+# %THEMETEXTXT
+THEMETEX=$HERE/preamble.theme.tex

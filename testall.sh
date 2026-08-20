@@ -1,8 +1,14 @@
 #!/bin/bash
 set -exuo pipefail
 
+./mds -h
+
+pushd themes
+make all
+popd
+
 mkdir -p testallresults
-#./mds -h
+
 find themes -mindepth 1 -maxdepth 1 -type d -print0 | while IFS= read -r -d '' i; do
     ./mds -vvv -s "$i" template.md
     mv template.pdf testallresults/$(basename $i).pdf

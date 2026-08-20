@@ -1,11 +1,14 @@
 # %HEADERTXT
 ## This file contains the settings for the theme %THEME
 
+# %HIGHLIGHTTXT
+HIGHLIGHT=zenburn
+
 # %ASPECTRATIOTXT
 ASPECTRATIO=169
 
 # %FONTSIZETXT
-FONTSIZE=10pt
+FONTSIZE=9pt
 
 # %THEMETXT
 THEME=Boadilla
@@ -19,27 +22,14 @@ FONTTHEME=structurebold
 # %COLORTHEMETXT
 COLORTHEME=orchid
 
-if [ $HANDOUT = true ]
-then
 # %THEMETEXTXT
-THEMETEX=$HERE/style_handout.tex
-# %HIGHLIGHTTXT
-HIGHLIGHT=kate
+THEMETEX=$HERE/preamble.theme.tex
+
 # %LOGOTXT
-LOGO=$HERE/scinetlogo.png
-# %LOGOHEIGHTTXT
-LOGOHEIGHT=0.12
-# %LOGOUPTXT
-LOGOUP=-0.03
-else
-# %THEMETEXTXT
-THEMETEX=$HERE/style.tex
-# %HIGHLIGHTTXT
-HIGHLIGHT=zenburn
-# %LOGOTXT
-LOGO=$HERE/scinetlogodark.png
+LOGO=$HERE/logos.png
+
 # %LOGOHEIGHTTXT
 LOGOHEIGHT=0.15
+
 # %LOGOUPTXT
 LOGOUP=-0.03
-fi
