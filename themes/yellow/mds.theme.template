@@ -26,10 +26,10 @@ FONTTHEME=structurebold
 COLORTHEME=crane
 
 # %THEMETEXTXT
-THEMETEX=$HERE/style.tex
+THEMETEX=$HERE/mds.tex
 
 # %LOGOTXT
-LOGO=$HERE/Alliance_logo_English.png
+LOGO=$HERE/yellow_rectangular_prism.png
 
 # %LOGOHEIGHT
 LOGOHEIGHT=0.13

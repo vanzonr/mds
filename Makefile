@@ -1,10 +1,15 @@
 # Example makefile
 
 MAKEFLAGS += -j2
-NAME = template
+NAME = example/template
 MDS = ./mds
 
-all: $(NAME).pdf $(NAME)_handout.pdf
+all: themes example testall
+
+themes:
+	make -C themes
+
+example: $(NAME).pdf $(NAME)_handout.pdf
 
 test:
 	./testall.sh quick
@@ -22,3 +27,4 @@ clean:
 	$(RM) $(NAME).pdf $(NAME)_handout.pdf
 	$(RM) -r testallresults
 	if [ -f catsub ]; then $(RM) catsub; fi
+	cd themes && make clean

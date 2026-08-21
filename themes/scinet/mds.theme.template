@@ -23,7 +23,7 @@ FONTTHEME=structurebold
 COLORTHEME=orchid
 
 # %THEMETEXTXT
-THEMETEX=$HERE/preamble.theme.tex
+THEMETEX=$HERE/mds.tex
 
 # %LOGOTXT
 LOGO=$HERE/logos.png

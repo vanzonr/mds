@@ -1,7 +1,0 @@
-source template.theme
-HANDOUT=true
-THEMETEX=style_handout.tex
-HIGHLIGHT=kate
-LOGO=scinetlogo.png
-LOGOHEIGHT=0.12
-LOGOUP=-0.03

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 set -euo pipefail
-shopt -s expand_aliases
-alias +++=:
+
+function +++(){ :;}
 
 function help()
 {
@@ -17,36 +17,45 @@ OPTIONS:
   -h          show this help
   -q          pass through quarto for executable blocks
   -d          work in draft mode; figures are included as outlines
+  -s FILE|DIR where to find the *.theme file
   -t          produce a handout version
   -p          preserve the intermediate latex file that pandoc produces
   -v          verbose mode
   -vv         more verbosity
   -vvv        more verbosity and show latex output
-  -s FILE|DIR where to find the *.theme file and other theme files
 
 MARKDOWNFILE.md can use extended pandoc markdown syntax.
 
-If no STYLEDIR or MARKDOWNFILE.theme directory exists, one is created,
-and populated with an example theme consisting of three files:
-mds.theme, mds.tex, and logo.png. 
-These files can be edited to change the look of the slides.
+If no FILE or DIR is given, and no MARKDOWNFILE.theme exists, one is
+created, and populated with an example theme consisting of three
+files: mds.theme, mds.tex, and logo.png.  These files can be edited to
+change the look of the slides.
 
-Output is written to MARKDOWNFILE.pdf, or, in handout mode, to
-MARKDOWN_handout.pdf.
+Output is written to MARKDOWNFILE.pdf or to the handout version
+MARKDOWNFILE_handout.pdf.
 
 EOF
 }
 
 function valid_theme_syntax()
 {
-    # only lines allowed of the form VAR=VALUE
+    # only lines allowed of the form VAR=VALUE, with a few exceptions
     theme_file="$1"
+    # Since this is a subset of bash syntax, let's check that first
+    if ! bash -n "$theme_file"; then
+        return 1
+    fi
     let n=0
     cat "$theme_file" | while IFS= read -r line; do
         let n++
         linefine=true
         if [ "$line" ]; then
-            eval set Z "${line//\$/\\\$}" 2>/dev/null
+            # avoid subshells if we can
+            line="${line//\$/\\\$}"
+            line="${line//\(/\\\(}"
+            line="${line//\)/\\\)}"
+            line="${line//\`/\\\`}"
+            eval set Z "$line" # 2>/dev/null
             if [ $? != 0 ]; then
                 linefine=false;
             elif [ $# -gt 2 ]; then
@@ -69,6 +78,7 @@ function valid_theme_syntax()
     done
 }
 
+# Parse command line options, but don't 'echo $parsingcomment' until a -v argument has been detected.
 parsingcomment="+++ Parsing command line options. +++
 "
 
@@ -79,7 +89,7 @@ VERBOSE=0
 PRESERVELATEX=false
 while getopts "s:vdqhtp" option; do
     case $option in
-        "v") let VERBOSE=VERBOSE+1; alias +++='echo +++'; echo -n "$parsingcomment"; parsingcomment="";;
+        "v") let VERBOSE=VERBOSE+1; function +++() { echo "+++ $@"; }; echo -n "$parsingcomment"; parsingcomment="";; # only echo the comment once
         "d") DRAFT=true;;
         "q") QUARTO=true;;
         "t") HANDOUT=true;;
@@ -822,18 +832,18 @@ if $DRAFT; then
     sed -i \
         -e 's/documentclass\[/documentclass\[draft,/' \
         ${NAME}.tex
-    eval ${ENGINE} -halt-on-error ${NAME}.tex $REDIR
+    eval ${ENGINE} -halt-on-error -output-directory=$(dirname ${NAME}) ${NAME}.tex $REDIR
 else
     +++ First pass: draft version +++
     sed -i \
         -e 's/documentclass\[/documentclass\[draft,/' \
         ${NAME}.tex
-    eval ${ENGINE} -halt-on-error ${ENGINEDRAFTMODEOPTION} ${NAME}.tex $REDIR
+    eval ${ENGINE} -halt-on-error -output-directory=$(dirname ${NAME}) ${ENGINEDRAFTMODEOPTION} ${NAME}.tex $REDIR
     +++ Second pass: complete version +++
     sed -i \
         -e 's/documentclass\[draft,/documentclass\[/' \
         ${NAME}.tex
-    eval ${ENGINE} -halt-on-error ${NAME}.tex $REDIR
+    eval ${ENGINE} -halt-on-error -output-directory=$(dirname ${NAME}) ${NAME}.tex $REDIR
 fi
 
 +++ ${NAME}.pdf created. +++

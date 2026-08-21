@@ -20,7 +20,7 @@ LOGOWIDTH=""
 LOGOUP=""
 
 # %PLAINTITLETXT
-PLAINTITLE=false    # true or false
+PLAINTITLE=false
 
 # %FONTFAMILYTXT
 FONTFAMILY=""
@@ -41,8 +41,11 @@ FONTTHEME=structurebold
 COLORTHEME=orchid
 
 # %THEMETEXTXT
-THEMETEX="$HERE/preamble.theme.tex"
-THEMETEX_SECTIONNAME="Part"
+THEMETEX="$HERE/mds.tex"
 
 # %ENGINETXT
 ENGINE=pdflatex
+
+## The following setting is specific to the $THEMETEX file used in
+## this theme (%THEME)
+THEMETEX_SECTIONNAME="Part"

@@ -24,12 +24,12 @@ then
 # %HIGHLIGHTTXT
 HIGHLIGHT=kate
 # %THEMETEXTXT
-THEMETEX=$HERE/style_handout.tex
+THEMETEX=$HERE/mds_handout.tex
 else
 # %HIGHLIGHTTXT
 HIGHLIGHT=zenburn
 # %THEMETEXTXT
-THEMETEX=$HERE/style.tex
+THEMETEX=$HERE/mds.tex
 fi
 
 ## This setting is for use in $THEMETEX

@@ -17,4 +17,4 @@ THEME=Hannover
 COLORTHEME=albatross
 
 # %THEMETEXTXT
-THEMETEX=$HERE/preamble.theme.tex
+THEMETEX=$HERE/mds.tex

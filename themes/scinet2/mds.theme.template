@@ -22,7 +22,7 @@ COLORTHEME=orchid
 if [ $HANDOUT = true ]
 then
 # %THEMETEXTXT
-THEMETEX=$HERE/style_handout.tex
+THEMETEX=$HERE/mds_handout.tex
 # %HIGHLIGHTTXT
 HIGHLIGHT=kate
 # %LOGOTXT
@@ -33,7 +33,7 @@ LOGOHEIGHT=0.12
 LOGOUP=-0.03
 else
 # %THEMETEXTXT
-THEMETEX=$HERE/style.tex
+THEMETEX=$HERE/mds.tex
 # %HIGHLIGHTTXT
 HIGHLIGHT=zenburn
 # %LOGOTXT

@@ -2,26 +2,32 @@
 
 THEMEFILES=alliance/mds.theme basic/mds.theme colors/mds.theme computeontario/mds.theme hannover-albatross/mds.theme ilmenau-dolphin/mds.theme rochester-crane-structurebold/mds.theme scinet/mds.theme scinet1/mds.theme scinet2/mds.theme white43/mds.theme yellow/mds.theme
 
+SRC=../themecomments
+
 all: ${THEMEFILES}
 
-%.theme: %.theme.template aspectratio.txt colortheme.txt fontfamily.txt fontsize.txt fonttheme.txt header.txt highlight.txt innertheme.txt logoheight.txt logo.txt logoup.txt logowidth.txt plaintitle.txt themetex.txt theme.txt engine.txt
+../catsub:
+	cd .. && wget https://raw.githubusercontent.com/vanzonr/catsub/refs/heads/master/catsub
+	chmod +x ../catsub
+
+%.theme: %.theme.template ../catsub ${SRC}/aspectratio.txt ${SRC}/colortheme.txt ${SRC}/fontfamily.txt ${SRC}/fontsize.txt ${SRC}/fonttheme.txt ${SRC}/header.txt ${SRC}/highlight.txt ${SRC}/innertheme.txt ${SRC}/logoheight.txt ${SRC}/logo.txt ${SRC}/logoup.txt ${SRC}/logowidth.txt ${SRC}/plaintitle.txt ${SRC}/themetex.txt ${SRC}/theme.txt ${SRC}/engine.txt
 	../catsub $< %THEME $$(dirname $<) \
-	%HEADERTXT "$$(cat header.txt)" \
-	%HIGHLIGHTTXT "$$(cat highlight.txt)" \
-	%FONTSIZETXT "$$(cat fontsize.txt)" \
-	%FONTFAMILYTXT "$$(cat fontfamily.txt)" \
-	%THEMETXT "$$(cat theme.txt)" \
-	%THEMETEXTXT "$$(cat themetex.txt)" \
-	%LOGOTXT "$$(cat logo.txt)" \
-	%INNERTHEMETXT "$$(cat innertheme.txt)" \
-	%COLORTHEMETXT "$$(cat colortheme.txt)" \
-	%ASPECTRATIOTXT "$$(cat aspectratio.txt)" \
-	%LOGOHEIGHTTXT "$$(cat logoheight.txt)" \
-	%LOGOUPTXT "$$(cat logoup.txt)" \
-	%PLAINTITLETXT "$$(cat plaintitle.txt)" \
-	%ENGINETXT "$$(cat engine.txt)" \
-	%LOGOWIDTHTXT "$$(cat logowidth.txt)" \
-	%FONTTHEMETXT "$$(cat fonttheme.txt)" \
+	%HEADERTXT "$$(cat ${SRC}/header.txt)" \
+	%HIGHLIGHTTXT "$$(cat ${SRC}/highlight.txt)" \
+	%FONTSIZETXT "$$(cat ${SRC}/fontsize.txt)" \
+	%FONTFAMILYTXT "$$(cat ${SRC}/fontfamily.txt)" \
+	%THEMETXT "$$(cat ${SRC}/theme.txt)" \
+	%THEMETEXTXT "$$(cat ${SRC}/themetex.txt)" \
+	%LOGOTXT "$$(cat ${SRC}/logo.txt)" \
+	%INNERTHEMETXT "$$(cat ${SRC}/innertheme.txt)" \
+	%COLORTHEMETXT "$$(cat ${SRC}/colortheme.txt)" \
+	%ASPECTRATIOTXT "$$(cat ${SRC}/aspectratio.txt)" \
+	%LOGOHEIGHTTXT "$$(cat ${SRC}/logoheight.txt)" \
+	%LOGOUPTXT "$$(cat ${SRC}/logoup.txt)" \
+	%PLAINTITLETXT "$$(cat ${SRC}/plaintitle.txt)" \
+	%ENGINETXT "$$(cat ${SRC}/engine.txt)" \
+	%LOGOWIDTHTXT "$$(cat ${SRC}/logowidth.txt)" \
+	%FONTTHEMETXT "$$(cat ${SRC}/fonttheme.txt)" \
 	> $@
 
 clean:

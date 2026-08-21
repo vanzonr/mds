@@ -38,6 +38,7 @@ PLAINTITLE=true
 INNERTHEME=rectangles
 
 # %THEMETEXTXT
-THEMETEX=$HERE/preamble.theme.tex
+THEMETEX=$HERE/mds.tex
 
+## The follwing is specific to the $THEMETEX used in this theme (%THEME)
 THEMETEX_TITLEBACKGROUND=$HERE/titlebackground.pdf
