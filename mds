@@ -571,7 +571,7 @@ function replacecolumns()
     local blockend=":::::::"
     local line=""
     while IFS= read -r line; do
-        line=$(echo "$line" | dos2unix) # should be a better way to strip ^M
+        line=${line//$'\r'} # handle dos text files by stripping the \r
         if [ $colcount = 0 ]; then
             if [ "$line" = "[[" ]; then
                 colcount=1
